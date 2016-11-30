@@ -1,6 +1,7 @@
 import sys
 
 from chess.session import Session
+from chess.exceptions import IllegalMoveError
 
 
 class ChessMajsterGame(object):
@@ -40,7 +41,10 @@ class ChessMajsterGame(object):
             else:
                 which_player = 'Black'
             src, dst = self._get_coords(which_player)
-            self.session.do_move(src, dst)
+            try:
+                self.session.do_move(src, dst)
+            except IllegalMoveError:
+                print "You tried to make an illegal move! Enter again."
 
     def _get_coords(self, which_player):
         while True:
