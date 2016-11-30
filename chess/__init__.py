@@ -1,2 +1,5 @@
+from chess.game import ChessMajsterGame
+
 def main():
-    TODO
+    game = ChessMajsterGame()
+    game.run()
