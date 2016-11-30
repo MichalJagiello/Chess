@@ -31,7 +31,7 @@ class Board(object):
                 symbols,
                 _X_LABELS))
         y = _LABEL_TO_Y[y_label]
-        self._rows_of_fields[y][:] = [self._piece_factory(s)
+        self._rows_of_fields[y][:] = [self._piece_factory.create(s)
                                       for s in symbols]
 
     def __getitem__(self, loc):

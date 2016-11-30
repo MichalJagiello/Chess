@@ -8,16 +8,12 @@ class TestBoard(unittest.TestCase):
     def test_setup_and_getitem(self):
         board = Board()
         board.setup()
-        self.assertEqual(board['a1'].symbol, 'R')
-        self.assertEqual(board['a1'].is_white, True)
-        self.assertEqual(board['e2'].symbol, 'P')
-        self.assertEqual(board['e2'].is_white, True)
+        self.assertEqual(board['a1'].get_symbol(), 'R')
+        self.assertEqual(board['e2'].get_symbol(), 'P')
         self.assertIsNone(board['c3'])
         self.assertIsNone(board['c3'])
-        self.assertEqual(board['d8'].symbol, 'Q')
-        self.assertEqual(board['d8'].is_white, False)
-        self.assertEqual(board['h8'].symbol, 'R')
-        self.assertEqual(board['h8'].is_white, False)
+        self.assertEqual(board['d8'].get_symbol(), 'q')
+        self.assertEqual(board['h8'].get_symbol(), 'r')
 
     def test_setitem(self):
         board = Board()
