@@ -10,6 +10,12 @@ class InvalidLocationLabelError(ChessError):
     """
 
 
+class InvalidPieceSymbolError(ChessError):
+    """
+    Raised when a piece symbol is not valid.
+    """
+
+
 class IllegalMoveError(ChessError):
     """
     Raised when a move requested by a player is not legal.
