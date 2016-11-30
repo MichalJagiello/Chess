@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 from chess.exceptions import InvalidLocationLabelError
 from chess.piece import PieceFactory
 
@@ -7,6 +9,8 @@ _Y_LABELS = '87654321'
 
 _LABEL_TO_X = {label: x for x, label in enumerate(_X_LABELS)}
 _LABEL_TO_Y = {label: y for y, label in enumerate(_Y_LABELS)}
+
+Move = namedtuple('Move', ['src', 'dst'])
 
 
 class Board(object):

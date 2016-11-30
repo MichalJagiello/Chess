@@ -1,6 +1,7 @@
 
 import unittest
 
+from chess.board_loc import Move, Location
 from chess.exceptions import IllegalMoveError
 from chess.piece import (
     PieceFactory,
@@ -93,3 +94,13 @@ class PieceTestCase(unittest.TestCase):
 
     def test_pawn_move(self):
         white_pawn = self.piece_factory.create('P')
+        black_pawn = self.piece_factory.create('p')
+
+        move = Move(src=Location("b2"), dst=Location("c2"))  # move to the right
+        self.assertRaises(IllegalMoveError, white_pawn.get_route, move)
+
+        move = Move(src=Location("b2"), dst=Location("a2"))  # move to the left
+        self.assertRaises(IllegalMoveError, white_pawn.get_route, move)
+
+        move = Move(src=Location("b2"), dst=Location("b1"))  # white move down
+        self.assertRaises(IllegalMoveError, white_pawn.get_route, move)
