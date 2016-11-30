@@ -17,6 +17,9 @@ class Session(object):
         self.board = Board()
         self._mover = Mover()
 
+    def setup(self):
+        self.board.setup()
+
     def do_move(self, src_label, dst_label):
         """
 
