@@ -1,7 +1,9 @@
 from collections import namedtuple
 
-from chess.board_loc import Board, Location
-from chess.exceptions import IllegalMoveError
+from chess.board_loc import (
+    Board,
+    Location,
+)
 from chess.mover import Mover
 from chess.player import Player
 
