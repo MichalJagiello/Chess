@@ -1,6 +1,8 @@
 import sys
 
+from chess.drawer import Drawer
 from chess.session import Session
+from chess.exceptions import IllegalMoveError
 
 
 class ChessMajsterGame(object):
@@ -10,6 +12,7 @@ class ChessMajsterGame(object):
     EXIT_STATUS = 'Game has been quit by user.'
 
     def __init__(self):
+        self.drawer = None
         self.session = None
 
     def run(self):
@@ -20,6 +23,7 @@ class ChessMajsterGame(object):
         white_player_name = self._get_player_name('White')
         black_player_name = self._get_player_name('Black')
         self.session = Session(white_player_name,  black_player_name)
+        self.drawer = Drawer(self.session)
         self._play_turns()
 
     def _get_player_name(self, player_color):
@@ -34,13 +38,24 @@ class ChessMajsterGame(object):
                 return user_input
 
     def _play_turns(self):
+        # flag indicates weather it is a new turn and the board should
+        # be displayed, or the last move was incorrect, then try again
+        is_new_turn = True
         while True:
+            if is_new_turn:
+                self.drawer.show()
             if self.session.is_white_move:
                 which_player = 'White'
             else:
                 which_player = 'Black'
             src, dst = self._get_coords(which_player)
-            self.session.do_move(src, dst)
+            try:
+                self.session.do_move(src, dst)
+            except IllegalMoveError as exc:
+                is_new_turn = False
+                print exc
+            else:
+                is_new_turn = True
 
     def _get_coords(self, which_player):
         while True:
