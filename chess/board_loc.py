@@ -14,7 +14,7 @@ class Board(object):
     def __init__(self):
         self._piece_factory = PieceFactory()
         self._rows_of_fields = [[None for _ in _X_LABELS]
-                                for _ in xrange(_Y_LABELS)]
+                                for _ in _Y_LABELS]
 
     def setup(self):
         self.set_row_from_symbols('8', 'rnbqkbnr')

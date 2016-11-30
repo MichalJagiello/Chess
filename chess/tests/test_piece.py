@@ -1,6 +1,7 @@
 
 import unittest
 
+from chess.exceptions import IllegalMoveError
 from chess.piece import (
     PieceFactory,
     Pawn,
@@ -89,3 +90,6 @@ class PieceTestCase(unittest.TestCase):
         self.assertIsInstance(black_king, King)
         self.assertFalse(black_king.is_white)
         self.assertEqual(black_king.get_symbol(), symbol)
+
+    def test_pawn_move(self):
+        white_pawn = self.piece_factory.create('P')
