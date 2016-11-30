@@ -1,3 +1,4 @@
+from chess.exceptions import IllegalMoveError
 
 
 class Mover(object):
@@ -6,4 +7,12 @@ class Mover(object):
         pass
 
     def do_move(self, session, move):
-        raise NotImplemented
+        field = session.board
+        if field[move.src]:
+            raise IllegalMoveError('Empty field {}'.format(move.src))
+
+        field[move.dst] = field.pi
+        field[move.src] = None
+
+
+

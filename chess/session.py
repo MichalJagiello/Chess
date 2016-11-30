@@ -30,11 +30,11 @@ class Session(object):
             move = namedtuple(**{'src': Location(src_label), 'dst': Location(dst_label)})
             self.last_move = move
         except Exception as exc:
-            raise IllegalMoveError('Bad location from: {}, to: {}'.format(src_label, dst_label))
+            raise IllegalMoveError('Bad move from: {}, to: {}'.format(src_label, dst_label))
 
         if self.is_white_move:
-            self._mover.do_move(self.white, move)
+            self._mover.do_move(self, move)
             self.is_white_move = False
         else:
-            self._mover.do_move(self.black, move)
+            self._mover.do_move(self, move)
             self.is_white_move = True
