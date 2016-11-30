@@ -1,13 +1,22 @@
-
-
-class IllegalMoveError(Exception):
+class ChessError(Exception):
     """
-    Raised when invalid move was requested by a player
+    The base error class.
     """
 
 
-class InvalidPieceSymbolError(Exception):
+class InvalidLocationLabelError(ChessError):
     """
-    Raised when invalid piece symbol
-    was given to piece factory.
+    Raised when a location label is not valid.
+    """
+
+
+class InvalidPieceSymbolError(ChessError):
+    """
+    Raised when a piece symbol is not valid.
+    """
+
+
+class IllegalMoveError(ChessError):
+    """
+    Raised when a move requested by a player is not legal.
     """
