@@ -1,4 +1,3 @@
-
 import unittest
 
 from chess.exceptions import IllegalMoveError

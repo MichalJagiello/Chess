@@ -1,8 +1,8 @@
 import sys
 
 from chess.drawer import Drawer
-from chess.session import Session
 from chess.exceptions import IllegalMoveError
+from chess.session import Session
 
 
 class ChessMajsterGame(object):
