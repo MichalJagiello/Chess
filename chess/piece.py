@@ -13,8 +13,7 @@ class PieceFactory(object):
                 symbol = piece._raw_symbol.upper()
             else:
                 symbol = piece._raw_symbol.lower()
-            self.symbols_dir[symbol] = {'piece': piece,
-                                        'is_white': is_white}
+            self.symbols_dir[symbol] = piece(is_white)
 
     def create(self, symbol):
         """
@@ -24,9 +23,7 @@ class PieceFactory(object):
         :return: Piece
         """
         try:
-            piece_constructor_dir = self.symbols_dir[symbol]
-            return piece_constructor_dir['piece'](
-                piece_constructor_dir['is_white'])
+            return self.symbols_dir[symbol]
         except KeyError:
             raise InvalidPieceSymbolError
 
@@ -62,9 +59,8 @@ class Pawn(Piece):
 
     _raw_symbol = 'P'
 
-    def __init__(self, is_white):
-        super(Pawn, self).__init__(is_white)
-        self.first_move = True
+    def first_move(self, move):
+        pass
 
     def check_vector_length(self, vector):
         """
