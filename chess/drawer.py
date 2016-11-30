@@ -21,7 +21,7 @@ class Drawer(object):
         print x_label_bar
     def get_repr_row(self, row):
 
-        return (x.get_symbol() if x else 'NN' for x in row)
+        return (x.get_symbol() if x else ' ' for x in row)
 
     def get_field_symbol(self, field):
 
