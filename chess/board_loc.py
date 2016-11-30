@@ -1,3 +1,4 @@
+from chess.exceptions import InvalidLocationLabelError
 from chess.piece import PieceFactory
 
 
@@ -6,12 +7,6 @@ _Y_LABELS = '87654321'
 
 _LABEL_TO_X = {label: x for x, label in enumerate(_X_LABELS)}
 _LABEL_TO_Y = {label: y for y, label in enumerate(_Y_LABELS)}
-
-
-class InvalidLocationLabelError(Exception):
-    """
-    Raised when a location label is not valid.
-    """
 
 
 class Board(object):
