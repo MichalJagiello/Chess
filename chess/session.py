@@ -8,6 +8,9 @@ from chess.mover import Mover
 from chess.player import Player
 
 
+Move = namedtuple('Move', 'src dst')
+
+
 class Session(object):
 
     def __init__(self, white_name, black_name):
@@ -30,7 +33,8 @@ class Session(object):
         :return: None
         :raise: IllegalMoveError
         """
-        move = namedtuple(src=Location(src_label), dst=Location(dst_label))
+
+        move = Move(src=Location(src_label), dst=Location(dst_label))
         self._mover.do_move(self, move)
         self.last_move = move
         self.is_white_move = not self.is_white_move
