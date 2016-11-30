@@ -1,10 +1,10 @@
 
 from collections import namedtuple
 
-from player import Player
-from location import Location
-from board import Board
-# from mover import Mover()
+from chess.player import Player
+from chess.board_loc import Board, Location
+from exceptions import IllegalMoveError
+from mover import Mover
 
 
 class Session(object):
@@ -15,10 +15,22 @@ class Session(object):
         self.white = Player(white_name)
         self.black = Player(black_name)
         self.board = Board()
-        # self._mover = Mover()
+        self._mover = Mover()
 
-    def do_move(self, player, src_spec, dst_spec):
-        move = namedtuple(**{'src': Location(src_spec), 'dst': Location(dst_spec)})
+    def do_move(self, src_label, dst_label):
+        """
+
+        :param player:
+        :param src_label:
+        :param dst_label:
+        :return: None
+        :raise: IllegalMoveError
+        """
+        try:
+            move = namedtuple(**{'src': Location(src_label), 'dst': Location(dst_label)})
+            self.last_move = move
+        except Exception as exc:
+            raise IllegalMoveError('Bad location from: {}, to: {}'.format(src_label, dst_label))
 
         if self.is_white_move:
             self._mover.do_move(self.white, move)
