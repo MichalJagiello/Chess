@@ -74,7 +74,7 @@ class Location(object):
 
     def get_vector(self, loc):
         return (loc._x - self._x,
-                loc._y - self._y)
+                self._y - loc._y)  # inversion: white low, black high
 
     def get_path(self, loc):
         TODO
