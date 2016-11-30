@@ -1,7 +1,6 @@
 from itertools import product
 
 from chess.exceptions import IllegalMoveError, InvalidPieceSymbolError
-from chess.location import Location
 
 
 class PieceFactory(object):
@@ -60,27 +59,42 @@ class Pawn(Piece):
 
     _raw_symbol = 'P'
 
-    def __init__(self, is_white):
-        super(Pawn, self).__init__(is_white)
-        self.first_move = True
+    def first_move(self, move):
+        pass
 
     def check_vector_length(self, vector):
-        assert()
+        """
+        Pawn can move only by one field if it
+        is not it's first move. Otherwise
+        it can move by two fields.
+
+        :param vector:
+        :return:
+        """
+        vector_y = vector[1]
+        if self.first_move:
+            assert 0 < vector_y <= 2
+        else:
+            assert vector_y == 1
 
     def check_vector_direction(self, vector):
         """
-        Piece move direction depends on it's color.
+        Pawn move direction depends on it's color.
         It can move up if it's white. Down otherwise
 
         :param vector:
         :return:
         """
-        pass
+        assert vector[1] * -1 ** int(self.is_white) < 0
 
     def get_route(self, move):
-        # TODO
         vector = move.src.get_vector(move.dst)
-        # if vector[1] * -1 ** int(self.is_white) <
+        try:
+            self.check_vector_length(vector)
+            self.check_vector_direction(vector)
+        except AssertionError:
+            raise IllegalMoveError
+        # path = move.src.get_path(move.dst)
 
 
 class Knight(Piece):
