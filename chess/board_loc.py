@@ -1,5 +1,8 @@
 from chess.exceptions import InvalidLocationLabelError
-from chess.piece import PieceFactory
+from chess.piece import (
+    Piece,
+    PieceFactory,
+)
 
 
 _X_LABELS = 'abcdefgh'
@@ -35,13 +38,22 @@ class Board(object):
                                       for s in symbols]
 
     def __getitem__(self, loc):
+        assert isinstance(loc, Location)
         self._rows_of_fields[loc._y][loc._x]
 
+    def __setitem__(self, loc, piece):
+        assert isinstance(loc, Location)
+        assert isinstance(piece, Piece)
+        self._rows_of_fields[loc._y][loc._x] = piece
+
     def __delitem__(self, loc):
+        assert isinstance(loc, Location)
         self._rows_of_fields[loc._y][loc._x] = None
 
-    def __setitem__(self, loc, piece):
-        self._rows_of_fields[loc._y][loc._x] = piece
+    def pop(self, loc):
+        f = self[loc]
+        del self[loc]
+        return f
 
     def iter_rows(self):
         return (tuple(row) for row in self._rows_of_fields)
@@ -74,7 +86,7 @@ class Location(object):
 
     def get_vector(self, loc):
         return (loc._x - self._x,
-                loc._y - self._y)
+                self._y - loc._y)  # inversion: white low, black high
 
     def get_path(self, loc):
         TODO
