@@ -1,3 +1,4 @@
+from chess.exceptions import InvalidLocationLabelError
 from chess.piece import PieceFactory
 
 
@@ -6,12 +7,6 @@ _Y_LABELS = '87654321'
 
 _LABEL_TO_X = {label: x for x, label in enumerate(_X_LABELS)}
 _LABEL_TO_Y = {label: y for y, label in enumerate(_Y_LABELS)}
-
-
-class InvalidLocationLabelError(Exception):
-    """
-    Raised when a location label is not valid.
-    """
 
 
 class Board(object):
@@ -28,10 +23,13 @@ class Board(object):
         self.set_row_from_symbols('1', 'RNBQKBNR')
 
     def set_row_from_symbols(self, y_label, symbols):
-        if len(symbols) != len(_X_LABELS):
-            raise ValueError('wrong number of symbols: {} (should be {})'.format(
+        assert len(symbols) == len(_X_LABELS), (
+            'wrong number of symbols: {} -- '
+            'should be {} ({!r} vs. {!r})'.format(
                 len(symbols),
-                len(_X_LABELS)))
+                len(_X_LABELS),
+                symbols,
+                _X_LABELS))
         y = _LABEL_TO_Y[y_label]
         self._rows_of_fields[y][:] = [self._piece_factory(s)
                                       for s in symbols]
