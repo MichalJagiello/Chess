@@ -1,5 +1,9 @@
 import unittest
-from collections import namedtuple
+
+from unittest_expander import (
+    expand,
+    foreach,
+)
 
 from chess.board_loc import Location
 from chess.exceptions import IllegalMoveError
@@ -26,7 +30,7 @@ class Move(object):
     def get_path(self):
         return self.src.get_path(self.dst)
 
-
+@expand
 class PieceTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -194,3 +198,84 @@ class PieceTestCase(unittest.TestCase):
 
         move = Move(src=Location("b1"), dst=Location("h3"))
         self.assertRaises(IllegalMoveError, queen.get_route, move)
+
+    @foreach([
+        ('d4', 'e6'),
+        ('d4', 'c6'),
+        ('d4', 'b5'),
+        ('d4', 'b3'),
+        ('d4', 'c2'),
+        ('d4', 'e2'),
+        ('d4', 'f3'),
+        ('d4', 'f5'),
+    ])
+    def test_knight_correct_move(self, src, dst):
+        knight = self.piece_factory.create('N')
+        move = Move(src=Location(src), dst=Location(dst))
+        knight.get_route(move)
+
+    @foreach([
+        ('d1', 'e6'),
+        ('d2', 'c6'),
+        ('d3', 'b5'),
+        ('d5', 'b3'),
+        ('c4', 'c2'),
+        ('f4', 'e3'),
+        ('g4', 'f7'),
+        ('h3', 'f5'),
+    ])
+    def test_knight_illegal_move(self, src, dst):
+        knight = self.piece_factory.create('N')
+        move = Move(src=Location(src), dst=Location(dst))
+        self.assertRaises(IllegalMoveError, knight.get_route, move)
+
+    @foreach([
+        ('d4', 'd6'),
+        ('d4', 'c4'),
+        ('d1', 'd8'),
+        ('a7', 'h7'),
+    ])
+    def test_rook_correct_move(self, src, dst):
+        rook = self.piece_factory.create('R')
+        move = Move(src=Location(src), dst=Location(dst))
+        rook.get_route(move)
+
+    @foreach([
+        ('d4', 'c6'),
+        ('d4', 'c6'),
+        ('a1', 'h8'),
+    ])
+    def test_rook_illegal_move(self, src, dst):
+        rook = self.piece_factory.create('R')
+        move = Move(src=Location(src), dst=Location(dst))
+        self.assertRaises(IllegalMoveError, rook.get_route, move)
+
+    @foreach([
+        ('d4', 'c5'),
+        ('d4', 'd5'),
+        ('d4', 'e5'),
+        ('d4', 'e4'),
+        ('d4', 'e3'),
+        ('d4', 'd3'),
+        ('d4', 'c3'),
+        ('d4', 'c4'),
+    ])
+    def test_king_correct_move(self, src, dst):
+        king = self.piece_factory.create('K')
+        move = Move(src=Location(src), dst=Location(dst))
+        king.get_route(move)
+
+    @foreach([
+        ('d4', 'a8'),
+        ('d4', 'd6'),
+        ('d4', 'f6'),
+        ('d4', 'd2'),
+        ('d4', 'b4'),
+        ('d4', 'g1'),
+        ('d4', 'a5'),
+        ('d4', 'h8'),
+    ])
+    def test_king_illegal_move(self, src, dst):
+        king = self.piece_factory.create('K')
+        move = Move(src=Location(src), dst=Location(dst))
+        self.assertRaises(IllegalMoveError, king.get_route, move)
