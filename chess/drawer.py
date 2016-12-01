@@ -9,6 +9,8 @@ class Drawer(object):
         board = session.board
         x_label_bar = self.x_label_pattern.format(
             labels=self.field_sep.join(board.iter_x_labels()))
+        print
+        print self.horizontal_line
         print x_label_bar
         print self.horizontal_line
         for i, row in enumerate(board.iter_rows()):
@@ -16,6 +18,8 @@ class Drawer(object):
             print self.line_pattern.format(row_num=(7 - i + 1), row=self.field_sep.join(row_repr))
             print self.horizontal_line
         print x_label_bar
+        print self.horizontal_line
+        print
 
     def _get_repr_row(self, row):
         return (x.get_symbol() if x else ' ' for x in row)
