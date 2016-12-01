@@ -1,22 +1,20 @@
 class ChessError(Exception):
-    """
-    The base error class.
-    """
 
+    default_msg = None
 
-class InvalidLocationLabelError(ChessError):
-    """
-    Raised when a location label is not valid.
-    """
-
-
-class InvalidPieceSymbolError(ChessError):
-    """
-    Raised when a piece symbol is not valid.
-    """
+    def __init__(self, msg=None, *args):
+        if msg is None:
+            msg = self.default_msg
+        super(ChessError, self).__init__(msg, *args)
 
 
 class IllegalMoveError(ChessError):
-    """
-    Raised when a move requested by a player is not legal.
-    """
+    default_msg = 'The requested move is illegal.'
+
+
+class InvalidLocationLabelError(ChessError):
+    default_msg = 'The location label is not valid.'
+
+
+class InvalidPieceSymbolError(ChessError):
+    default_msg = 'The piece symbol is not valid.'
