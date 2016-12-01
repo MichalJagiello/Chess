@@ -25,7 +25,6 @@ class ChessMajsterGame(object):
         self.session = Session(white_player_name,  black_player_name)
         self.session.setup()
         self.drawer = Drawer()
-        self.drawer.show(self.session)
         self._play_turns()
 
     def _get_player_name(self, player_color):
