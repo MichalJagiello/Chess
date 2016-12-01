@@ -6,7 +6,7 @@ from unittest_expander import (
 )
 
 from chess.board_loc import Location
-from chess.exceptions import IllegalMoveError
+from chess.exceptions import UserActionError
 from chess.piece import (
     PieceFactory,
     Pawn,
@@ -127,16 +127,16 @@ class PieceTestCase(unittest.TestCase):
         black_pawn = self.piece_factory.create('p')
 
         move = Move(src=Location("b2"), dst=Location("c2"))  # move to the right
-        self.assertRaises(IllegalMoveError, white_pawn.get_route, move)
+        self.assertRaises(UserActionError, white_pawn.get_route, move)
 
         move = Move(src=Location("b2"), dst=Location("a2"))  # move to the left
-        self.assertRaises(IllegalMoveError, white_pawn.get_route, move)
+        self.assertRaises(UserActionError, white_pawn.get_route, move)
 
         move = Move(src=Location("b2"), dst=Location("b1"))  # white move down
-        self.assertRaises(IllegalMoveError, white_pawn.get_route, move)
+        self.assertRaises(UserActionError, white_pawn.get_route, move)
 
         move = Move(src=Location("g1"), dst=Location("f1"))  # black move up
-        self.assertRaises(IllegalMoveError, black_pawn.get_route, move)
+        self.assertRaises(UserActionError, black_pawn.get_route, move)
 
         move = Move(src=Location("b2"), dst=Location("b4"))  # white piece first move
         route = white_pawn.get_route(move)
@@ -145,7 +145,7 @@ class PieceTestCase(unittest.TestCase):
 
         # white piece not first two fields move
         move = Move(src=Location("b3"), dst=Location("b5"))
-        self.assertRaises(IllegalMoveError, white_pawn.get_route, move)
+        self.assertRaises(UserActionError, white_pawn.get_route, move)
 
         # black piece first move
         move = Move(src=Location("b7"), dst=Location("b5"))
@@ -155,7 +155,7 @@ class PieceTestCase(unittest.TestCase):
 
         # black piece not first two fields move
         move = Move(src=Location("b6"), dst=Location("b4"))
-        self.assertRaises(IllegalMoveError, black_pawn.get_route, move)
+        self.assertRaises(UserActionError, black_pawn.get_route, move)
 
         # white move attack
         move = Move(src=Location("b3"), dst=Location("a4"))
@@ -167,13 +167,13 @@ class PieceTestCase(unittest.TestCase):
         bishop = self.piece_factory.create('B')
 
         move = Move(src=Location("b1"), dst=Location("a3"))
-        self.assertRaises(IllegalMoveError, bishop.get_route, move)
+        self.assertRaises(UserActionError, bishop.get_route, move)
 
         move = Move(src=Location("b1"), dst=Location("c1"))
-        self.assertRaises(IllegalMoveError, bishop.get_route, move)
+        self.assertRaises(UserActionError, bishop.get_route, move)
 
         move = Move(src=Location("b1"), dst=Location("b8"))
-        self.assertRaises(IllegalMoveError, bishop.get_route, move)
+        self.assertRaises(UserActionError, bishop.get_route, move)
 
         moves = [
             Move(src=Location("b1"), dst=Location("a2")),
@@ -197,7 +197,7 @@ class PieceTestCase(unittest.TestCase):
             queen.get_route(move)
 
         move = Move(src=Location("b1"), dst=Location("h3"))
-        self.assertRaises(IllegalMoveError, queen.get_route, move)
+        self.assertRaises(UserActionError, queen.get_route, move)
 
     @foreach([
         ('d4', 'e6'),
@@ -227,7 +227,7 @@ class PieceTestCase(unittest.TestCase):
     def test_knight_illegal_move(self, src, dst):
         knight = self.piece_factory.create('N')
         move = Move(src=Location(src), dst=Location(dst))
-        self.assertRaises(IllegalMoveError, knight.get_route, move)
+        self.assertRaises(UserActionError, knight.get_route, move)
 
     @foreach([
         ('d4', 'd6'),
@@ -248,7 +248,7 @@ class PieceTestCase(unittest.TestCase):
     def test_rook_illegal_move(self, src, dst):
         rook = self.piece_factory.create('R')
         move = Move(src=Location(src), dst=Location(dst))
-        self.assertRaises(IllegalMoveError, rook.get_route, move)
+        self.assertRaises(UserActionError, rook.get_route, move)
 
     @foreach([
         ('d4', 'c5'),
@@ -278,4 +278,4 @@ class PieceTestCase(unittest.TestCase):
     def test_king_illegal_move(self, src, dst):
         king = self.piece_factory.create('K')
         move = Move(src=Location(src), dst=Location(dst))
-        self.assertRaises(IllegalMoveError, king.get_route, move)
+        self.assertRaises(UserActionError, king.get_route, move)

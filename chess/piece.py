@@ -1,6 +1,6 @@
 from itertools import product
 
-from chess.exceptions import IllegalMoveError
+from chess.exceptions import UserActionError
 from chess.route import Route
 
 
@@ -63,7 +63,7 @@ class Pawn(Piece):
             self._check_vector_y_length(vector, self._first_move(move))
             self._check_vector_direction(vector)
         except ValueError:
-            raise IllegalMoveError
+            raise UserActionError
         path = move.get_path()
         if self._is_attack(vector):
             return Route(path, must_be_attack=True, must_not_be_attack=False)
@@ -106,7 +106,7 @@ class Pawn(Piece):
         """
         if all(vector):
             if abs(vector[0]) != 1 and abs(vector[1]) != 1:
-                raise IllegalMoveError
+                raise UserActionError
             return True
         return False
 
@@ -118,7 +118,7 @@ class Knight(Piece):
     def get_route(self, move):
         vector = move.get_vector()
         if [1, 2] != sorted(map(abs, vector)):
-            raise IllegalMoveError
+            raise UserActionError
         return Route([])
 
 
@@ -129,7 +129,7 @@ class Bishop(Piece):
     def get_route(self, move):
         vector = move.get_vector()
         if abs(vector[0]) != abs(vector[1]):
-            raise IllegalMoveError
+            raise UserActionError
         return Route(move.get_path())
 
 class Rook(Piece):
@@ -140,7 +140,7 @@ class Rook(Piece):
         vector = move.get_vector()
         if 0 in vector:
             return Route(move.get_path())
-        raise IllegalMoveError
+        raise UserActionError
 
 
 
@@ -153,7 +153,7 @@ class Queen(Piece):
 
         if all(vector):
             if abs(vector[0]) != abs(vector[1]):
-                raise IllegalMoveError
+                raise UserActionError
 
         return Route(move.get_path())
 
@@ -165,5 +165,5 @@ class King(Piece):
     def get_route(self, move):
         vector = move.get_vector()
         if any(i > 1 for i in map(abs, vector)):
-            raise IllegalMoveError
+            raise UserActionError
         return Route(move.get_path())

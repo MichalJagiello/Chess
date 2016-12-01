@@ -1,5 +1,5 @@
 from chess.board_loc import Location
-from chess.exceptions import IllegalMoveError
+from chess.exceptions import UserActionError
 from chess.piece import (
     King,
     Pawn,
@@ -26,9 +26,9 @@ class MoveFactory(object):
             elif move_spec[0] == self._kingside_castling_label:
                 move = KingsideCastlingMove(session)
             else:
-                raise IllegalMoveError
+                raise UserActionError
         else:
-            raise IllegalMoveError
+            raise UserActionError
         return move
 
 
@@ -89,20 +89,20 @@ class NormalMove(Move):
 
     def _check_src_not_empty(self):
         if self.piece is None:
-            raise IllegalMoveError('Source location does not contain any figure.')
+            raise UserActionError('Source location does not contain any figure.')
 
     def _check_if_player_owns_src_piece(self):
         if self.piece.is_white != self._session.is_white_turn:
-            raise IllegalMoveError('You tried to move not your piece.')
+            raise UserActionError('You tried to move not your piece.')
 
     def _check_src_dst_are_distinct(self):
         if self.get_vector() == (0, 0):
-            raise IllegalMoveError('You tried to move to the same location.')
+            raise UserActionError('You tried to move to the same location.')
 
     def _check_path(self, route):
         for loc in route.path:
             if self._session.board[loc] is not None:
-                raise IllegalMoveError('Other piece on move path.')
+                raise UserActionError('Other piece on move path.')
 
     def _check_dst_field(self, route):
         dst_piece = self._session.board[self.dst]
@@ -110,24 +110,24 @@ class NormalMove(Move):
             if not dst_piece:
                 self._check_en_passant()
             elif self.piece.is_white == dst_piece.is_white:
-                raise IllegalMoveError('This move has to be an attack.')
+                raise UserActionError('This move has to be an attack.')
         if route.must_not_be_attack:
             if dst_piece:
-                raise IllegalMoveError('This move can\'t be an attack.')
+                raise UserActionError('This move can\'t be an attack.')
         if dst_piece and self.piece.is_white == dst_piece.is_white:
-            raise IllegalMoveError('You tried to attack your\'s piece.')
+            raise UserActionError('You tried to attack your\'s piece.')
 
     def _check_en_passant(self):
         if not self._session.last_move:
-            raise IllegalMoveError('Invalid en passant attack.')
+            raise UserActionError('Invalid en passant attack.')
         last_move = self._session.last_move
         if not isinstance(self.piece, Pawn) or not isinstance(last_move.piece, Pawn):
-            raise IllegalMoveError('Invalid en passant attack.')
+            raise UserActionError('Invalid en passant attack.')
         if not self._between(
                 self.dst.y_label,
                 last_move.src.y_label,
                 last_move.dst.y_label):
-            raise IllegalMoveError('Invalid en passant attack.')
+            raise UserActionError('Invalid en passant attack.')
         self._en_passant_attack_dst = last_move.dst
 
     def _between(self, value, first, second):
@@ -168,10 +168,10 @@ class CastlingMove(Move):
     def execute(self):
         try:
             if not self.can_be_done():
-                raise IllegalMoveError
+                raise UserActionError
             self._move_the_rook()
-        except IllegalMoveError:
-            raise IllegalMoveError(self.move_error_msg)
+        except UserActionError:
+            raise UserActionError(self.move_error_msg)
         with critical_part():
             # *no* exception should occur here because
             # self._move_the_rook() mutated the session

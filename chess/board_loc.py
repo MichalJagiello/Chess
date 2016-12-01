@@ -1,4 +1,4 @@
-from chess.exceptions import IllegalMoveError
+from chess.exceptions import UserActionError
 from chess.piece import (
     Piece,
     PieceFactory,
@@ -107,7 +107,7 @@ class Location(object):
             x = self._parse_x_label(x_label)
             y = self._parse_y_label(y_label)
         except (ValueError, KeyError):
-            raise IllegalMoveError(
+            raise UserActionError(
                 '{!r} is not a valid location label.'.format(loc_label))
         return x_label, y_label, x, y
 
@@ -125,7 +125,7 @@ class Location(object):
         x_delta = dst._x - x
         y_delta = dst._y - y
         if not self._in_straight_line(x_delta, y_delta):
-            raise IllegalMoveError
+            raise UserActionError
         x_step = self._delta_to_step(x_delta)
         y_step = self._delta_to_step(y_delta)
         while True:

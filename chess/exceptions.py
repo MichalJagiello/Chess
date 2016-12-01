@@ -8,5 +8,5 @@ class UserError(Exception):
         super(UserError, self).__init__(msg, *args)
 
 
-class IllegalMoveError(UserError):
+class UserActionError(UserError):
     default_msg = 'The requested move is illegal.'

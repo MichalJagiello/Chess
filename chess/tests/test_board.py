@@ -10,7 +10,7 @@ from chess.board_loc import (
     Board,
     Location,
 )
-from chess.exceptions import IllegalMoveError
+from chess.exceptions import UserActionError
 from chess.piece import (
     Piece,
     PieceFactory,
@@ -318,7 +318,7 @@ class TestLocation(unittest.TestCase):
 
     @foreach(init_raising_error_cases)
     def test_init_raising_error(self, given_loc_label):
-        with self.assertRaises(IllegalMoveError):
+        with self.assertRaises(UserActionError):
             Location(given_loc_label)
 
     @foreach(get_vector_cases)
@@ -343,5 +343,5 @@ class TestLocation(unittest.TestCase):
     def test_get_path_raising_error(self, src_label, dst_label):
         src = Location(src_label)
         dst = Location(dst_label)
-        with self.assertRaises(IllegalMoveError):
+        with self.assertRaises(UserActionError):
             src.get_path(dst)
