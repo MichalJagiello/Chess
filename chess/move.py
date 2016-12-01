@@ -64,6 +64,16 @@ class NormalMove(Move):
             if self._session.board[field] is not None:
                 raise IllegalMoveError('Other piece on move path')
 
+    def _check_dst_field(self):
+        if self.route.must_be_attack:
+            if not self.dst_piece or self.src_piece.is_white == self.dst_piece.is_white:
+                raise IllegalMoveError('This move has to be an attack')
+        if self.route.must_not_be_attack:
+            if self.dst_piece:
+                raise IllegalMoveError('This move can\'t be an attack')
+        if self.dst_piece and self.src_piece.is_white == self.dst_piece.is_white:
+            raise IllegalMoveError('You tried to attack your\'s piece')
+
 
 class LeftCastlingMove(Move):
     def execute(self):
