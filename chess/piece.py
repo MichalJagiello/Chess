@@ -114,6 +114,12 @@ class Knight(Piece):
 
     _raw_symbol = 'N'
 
+    def get_route(self, move):
+        vector = move.src.get_vector(move.dst)
+        if [1, 2] != sorted(map(abs, vector)):
+            raise IllegalMoveError
+        return Route([])
+
 
 class Bishop(Piece):
 
