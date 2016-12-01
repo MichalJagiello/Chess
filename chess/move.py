@@ -32,7 +32,7 @@ class NormalMove(Move):
         self.dst_piece = self._session.board[self.dst]
         self._check_src_not_empty(self.src_piece)
         self._check_if_player_owns_src_piece(self.src_piece)
-        self.route = self.src_piece.get_route()
+        self.route = self.src_piece.get_route(self)
 
     def get_vector(self):
         return self.src.get_vector(self._dst_label)
