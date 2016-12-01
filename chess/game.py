@@ -1,7 +1,7 @@
 import sys
 
 from chess.drawer import Drawer
-from chess.exceptions import UserError
+from chess.exceptions import UserActionError
 from chess.session import (
     ChessGameSession,
     QueensPuzzleSession,
@@ -80,7 +80,7 @@ class ChessMajsterGame(object):
                 self.drawer.show(self.session)
             try:
                 self.session.act(self._get_action_spec_list())
-            except UserError as exc:
+            except UserActionError as exc:
                 is_new_turn = False
                 print exc
             else:
