@@ -3,7 +3,10 @@ from chess.exceptions import (
     IllegalMoveError,
     InvalidLocationLabelError
 )
-from chess.piece import Piece
+from chess.piece import (
+    King,
+    Rook
+)
 
 
 class MoveFactory(object):
@@ -24,7 +27,6 @@ class NormalMove(Move):
         super(NormalMove, self).__init__(session)
         self.src = Location(src_label)
         self.dst = Location(dst_label)
-        self._dst_label = dst_label
         self._session = session
         # raise an exception, when any of those fields are out
         # of board's range
@@ -33,12 +35,13 @@ class NormalMove(Move):
         self._check_src_not_empty(self.src_piece)
         self._check_if_player_owns_src_piece(self.src_piece)
         self.route = self.src_piece.get_route(self)
+        self._player = self._session.current_player
 
     def get_vector(self):
-        return self.src.get_vector(self._dst_label)
+        return self.src.get_vector(self.dst)
 
     def get_path(self):
-        return self.src.get_path(self._dst_label)
+        return self.src.get_path(self.dst)
 
     def execute(self):
         pass
@@ -56,6 +59,8 @@ class NormalMove(Move):
     def _check_src_dst_are_different(self):
         if not any(self.get_vector()):
             raise IllegalMoveError('You tried to move on the same location.')
+
+    def _check_which_castling(self, src, is_white_move):
 
 
 class LeftCastlingMove(Move):
