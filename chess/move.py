@@ -4,15 +4,31 @@ from chess.exceptions import IllegalMoveError
 class MoveFactory(object):
 
     def create(self, session, move_spec):
+        """
+
+        :param session:
+        :param move_spec:
+        :return: move
+        :raise: IllegalMoveError
+        """
+
         assert isinstance(move_spec, list)
-        try:
-            if len(move_spec) == 2:
-                move = NormalMove(session, move_spec[0],  move_spec[1])
-            elif len(move_spec) == 1:
-                if move_spec[0] == QueenCastlingMove:
-                    move = QueenCastlingMove(move_spec[0])
-                else:
-                    move = KingCastlingMove(move_spec[0])
+
+        if len(move_spec) == 2:
+            move = NormalMove(session, move_spec[0],  move_spec[1])
+        elif len(move_spec) == 1:
+            if move_spec[0] == QueenCastlingMove:
+                move = QueenCastlingMove(move_spec[0])
+            elif move_spec[0] == KingCastlingMove:
+                move = KingCastlingMove(move_spec[0])
+            else:
+                # not implemented notation
+                raise IllegalMoveError
+        else:
+            # not implemented notation
+            raise IllegalMoveError
+
+        return move
 
 
 class Move(object):
