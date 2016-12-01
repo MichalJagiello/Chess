@@ -86,6 +86,15 @@ class Location(object):
     def __str__(self):
         return self.loc_label
 
+    def __eq__(self, other):
+        return self.loc_label == other.loc_label
+
+    def __ne__(self, other):
+        return self.loc_label != other.loc_label
+
+    def __hash__(self):
+        return hash(self.loc_label)
+
     def get_vector(self, dst):
         assert isinstance(dst, Location)
         return (dst._x - self._x,
