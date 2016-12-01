@@ -60,9 +60,9 @@ class Pawn(Piece):
     _raw_symbol = 'P'
 
     def first_move(self, move):
-        pass
+        return True  # TODO: temporary
 
-    def check_vector_length(self, vector):
+    def check_vector_length(self, vector, first_move):
         """
         Pawn can move only by one field if it
         is not it's first move. Otherwise
@@ -72,7 +72,7 @@ class Pawn(Piece):
         :return:
         """
         vector_y = vector[1]
-        if self.first_move:
+        if first_move:
             assert 0 < vector_y <= 2
         else:
             assert vector_y == 1
@@ -90,7 +90,7 @@ class Pawn(Piece):
     def get_route(self, move):
         vector = move.src.get_vector(move.dst)
         try:
-            self.check_vector_length(vector)
+            self.check_vector_length(vector, self.first_move(move))
             self.check_vector_direction(vector)
         except AssertionError:
             raise IllegalMoveError
