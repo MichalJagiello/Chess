@@ -125,6 +125,11 @@ class Bishop(Piece):
 
     _raw_symbol = 'B'
 
+    def get_route(self, move):
+        vector = move.src.get_vector(move.dst)
+        if abs(vector[0]) != abs(vector[1]):
+            raise IllegalMoveError
+        return Route(move.src.get_path(move.dst))
 
 class Rook(Piece):
 
