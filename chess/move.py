@@ -7,6 +7,7 @@ from chess.piece import Piece
 
 
 class MoveFactory(object):
+
     def create(self, session, move_spec):
         """
 
