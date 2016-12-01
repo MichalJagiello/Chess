@@ -74,14 +74,14 @@ class NormalMove(Move):
         self.route = self.src_piece.get_route(self)
         self._check_dst_field()
         self._player = self._session.current_player
-        self.dst_piece, self.src_piece = self.src_piece, None
-        if isinstance(self.src_piece, King):
-            if self._player.can_king_castling:
-                self._player.can_king_castling = False
-            if self._player.can_queen_castling:
-                self._player.can_queen_castling = False
+        self._session.board[self.dst] = self._session.board.pop(self.src)
+        if isinstance(self.dst_piece, King):
+            if self._player.can_kingside_castling:
+                self._player.can_kingside_castling = False
+            if self._player.can_queenside_castling:
+                self._player.can_queenside_castling = False
         if isinstance(self.src_piece, Rook):
-            self._set_king_or_queen_castling(self.src, self._session.is_white_move)
+            self._set_king_or_queenside_castling(self.src, self._session.is_white_move)
 
     @staticmethod
     def _check_src_not_empty(piece):
@@ -101,12 +101,12 @@ class NormalMove(Move):
             if self._session.board[field] is not None:
                 raise IllegalMoveError('Other piece on move path')
 
-    def _set_king_or_queen_castling(self, src, is_white_move):
+    def _set_king_or_queenside_castling(self, src, is_white_move):
         label = src.loc_label.lower()
         if (is_white_move and label == 'a1') or (not is_white_move and label == 'a8'):
-            self._player.can_queen_castling = False
+            self._player.can_queenside_castling = False
         elif (is_white_move and label == 'h1') or (not is_white_move and label == 'ah'):
-            self._player.can_king_castling = False
+            self._player.can_kingside_castling = False
 
     def _check_dst_field(self):
         if self.route.must_be_attack:
