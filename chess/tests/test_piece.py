@@ -180,3 +180,17 @@ class PieceTestCase(unittest.TestCase):
         ]
         for move in moves:
             bishop.get_route(move)
+
+    def test_queen_move(self):
+        queen = self.piece_factory.create('Q')
+
+        moves = [
+            Move(src=Location("b1"), dst=Location("a1")),
+            Move(src=Location("b1"), dst=Location("b8")),
+            Move(src=Location("b1"), dst=Location("g6")),
+        ]
+        for move in moves:
+            queen.get_route(move)
+
+        move = Move(src=Location("b1"), dst=Location("h3"))
+        self.assertRaises(IllegalMoveError, queen.get_route, move)
