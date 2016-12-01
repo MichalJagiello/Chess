@@ -54,13 +54,9 @@ class NormalMove(Move):
 
     def __init__(self, session, src_label, dst_label):
         super(NormalMove, self).__init__(session)
+        self._session = session
         self.src = Location(src_label)
         self.dst = Location(dst_label)
-        self._session = session
-        # raise an exception, when any of those fields are out
-        # of board's range
-        self.src_piece = self._session.board[self.src]
-        self.dst_piece = self._session.board[self.dst]
 
     def get_vector(self):
         return self.src.get_vector(self.dst)
@@ -69,18 +65,19 @@ class NormalMove(Move):
         return self.src.get_path(self.dst)
 
     def execute(self):
-        self._check_src_not_empty(self.src_piece)
-        self._check_if_player_owns_src_piece(self.src_piece)
-        self.route = self.src_piece.get_route(self)
-        self._check_dst_field()
-        self._player = self._session.current_player
-        self._session.board[self.dst] = self._session.board.pop_piece(self.src)
-        if isinstance(self.dst_piece, King):
-            if self._player.can_kingside_castling:
-                self._player.can_kingside_castling = False
-            if self._player.can_queenside_castling:
-                self._player.can_queenside_castling = False
-        if isinstance(self.src_piece, Rook):
+        player = self._session.current_player
+        piece = self._session.board[self.src]
+        self._check_src_not_empty(piece)
+        self._check_if_player_owns_src_piece(piece)
+        route = piece.get_route(self)
+        self._check_dst_field(route, piece)
+        self._check_path(route)
+        piece = self._session.board.pop_piece(self.src)
+        self._session.board[self.dst] = piece
+        if isinstance(piece, King):
+            player.can_kingside_castling = False
+            player.can_queenside_castling = False
+        if isinstance(piece, Rook):
             self._set_king_or_queenside_castling(self.src, self._session.is_white_move)
 
     @staticmethod
@@ -96,34 +93,36 @@ class NormalMove(Move):
         if not any(self.get_vector()):
             raise IllegalMoveError('You tried to move on the same location.')
 
-    def _check_path(self):
-        for field in self.route:
-            if self._session.board[field] is not None:
+    def _check_path(self, route):
+        for loc in route.path:
+            if self._session.board[loc] is not None:
                 raise IllegalMoveError('Other piece on move path')
 
+    def _check_dst_field(self, route, src_piece):
+        dst_piece = self._session.board[self.dst]
+        if route.must_be_attack:
+            if not dst_piece or src_piece.is_white == dst_piece.is_white:
+                raise IllegalMoveError('This move has to be an attack')
+        if route.must_not_be_attack:
+            if dst_piece:
+                raise IllegalMoveError('This move can\'t be an attack')
+        if dst_piece and src_piece.is_white == dst_piece.is_white:
+            raise IllegalMoveError('You tried to attack your\'s piece')
+
     def _set_king_or_queenside_castling(self, src, is_white_move):
+        player = self._session.current_player
         label = src.loc_label.lower()
         if (is_white_move and label == 'a1') or (not is_white_move and label == 'a8'):
-            self._player.can_queenside_castling = False
+            player.can_queenside_castling = False
         elif (is_white_move and label == 'h1') or (not is_white_move and label == 'ah'):
-            self._player.can_kingside_castling = False
-
-    def _check_dst_field(self):
-        if self.route.must_be_attack:
-            if not self.dst_piece or self.src_piece.is_white == self.dst_piece.is_white:
-                raise IllegalMoveError('This move has to be an attack')
-        if self.route.must_not_be_attack:
-            if self.dst_piece:
-                raise IllegalMoveError('This move can\'t be an attack')
-        if self.dst_piece and self.src_piece.is_white == self.dst_piece.is_white:
-            raise IllegalMoveError('You tried to attack your\'s piece')
+            player.can_kingside_castling = False
 
 
 class CastlingMove(Move):
 
     _is_white_to_y_label = {
-        True: '2',
-        False: '7',
+        True: '1',
+        False: '8',
     }
 
     move_error_msg = None    # must be overridden
@@ -179,7 +178,7 @@ class CastlingMove(Move):
         board = self._session.board
         king_src = self._get_king_src()
         king_dst = self._get_king_dst()
-        king = board.pop(king_src)
+        king = board.pop_piece(king_src)
         board[king_dst] = king
 
     def _get_king_src(self):
