@@ -23,7 +23,9 @@ class ChessMajsterGame(object):
         white_player_name = self._get_player_name('White')
         black_player_name = self._get_player_name('Black')
         self.session = Session(white_player_name,  black_player_name)
-        self.drawer = Drawer(self.session)
+        self.session.setup()
+        self.drawer = Drawer()
+        self.drawer.show(self.session)
         self._play_turns()
 
     def _get_player_name(self, player_color):
@@ -43,7 +45,7 @@ class ChessMajsterGame(object):
         is_new_turn = True
         while True:
             if is_new_turn:
-                self.drawer.show()
+                self.drawer.show(self.session)
             if self.session.is_white_move:
                 which_player = 'White'
             else:
