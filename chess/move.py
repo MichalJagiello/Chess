@@ -44,8 +44,7 @@ class NormalMove(Move):
         return self.src.get_path(self.dst)
 
     def execute(self):
-        pass
-        # TODO
+        self.dst_piece, self.src_piece = self.src_piece, None
 
     @staticmethod
     def _check_src_not_empty(piece):
