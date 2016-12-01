@@ -2,5 +2,5 @@ class Player(object):
 
     def __init__(self, name):
         self.name = name
-        self.queen_castling = True
-        self.king_castling = True
+        self.can_queenside_castling = True
+        self.can_kingside_castling = True
