@@ -91,6 +91,20 @@ class PieceTestCase(unittest.TestCase):
         self.assertFalse(black_king.is_white)
         self.assertEqual(black_king.get_symbol(), symbol)
 
+    def test_pawn_first_move(self):
+        white_pawn = self.piece_factory.create('P')
+        black_pawn = self.piece_factory.create('p')
+
+        white_first_move = Move(src=Location("b2"), dst=Location("b4"))
+        black_first_move = Move(src=Location("g7"), dst=Location("g5"))
+
+        self.assertTrue(white_pawn.first_move(white_first_move))
+        self.assertFalse(white_pawn.first_move(black_first_move))
+
+        self.assertTrue(black_pawn.first_move(black_first_move))
+        self.assertFalse(black_pawn.first_move(white_first_move))
+
+
     def test_pawn_move(self):
         white_pawn = self.piece_factory.create('P')
         black_pawn = self.piece_factory.create('p')
@@ -103,3 +117,6 @@ class PieceTestCase(unittest.TestCase):
 
         move = Move(src=Location("b2"), dst=Location("b1"))  # white move down
         self.assertRaises(IllegalMoveError, white_pawn.get_route, move)
+
+        move = Move(src=Location("g1"), dst=Location("f1"))  # black move up
+        self.assertRaises(IllegalMoveError, black_pawn.get_route, move)

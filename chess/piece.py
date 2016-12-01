@@ -60,16 +60,19 @@ class Pawn(Piece):
     _raw_symbol = 'P'
 
     def first_move(self, move):
-        return True  # TODO: temporary
+        """
+        Checks if given move is a first move
+        for a pawn
+        """
+        if self.is_white:
+            return move.src._y == 1
+        return move.scr._y == 6
 
     def check_vector_length(self, vector, first_move):
         """
         Pawn can move only by one field if it
         is not it's first move. Otherwise
         it can move by two fields.
-
-        :param vector:
-        :return:
         """
         vector_y = vector[1]
         if first_move:
@@ -81,9 +84,6 @@ class Pawn(Piece):
         """
         Pawn move direction depends on it's color.
         It can move up if it's white. Down otherwise
-
-        :param vector:
-        :return:
         """
         assert vector[1] * -1 ** int(self.is_white) < 0
 
