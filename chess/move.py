@@ -57,6 +57,12 @@ class NormalMove(Move):
         if not any(self.get_vector()):
             raise IllegalMoveError('You tried to move on the same location.')
 
+    def _check_path(self):
+        for field in self.route:
+            if self._session.board[field] is None:
+                raise IllegalMoveError('Other piece on move path')
+
+
 
 class LeftCastlingMove(Move):
     def execute(self):
