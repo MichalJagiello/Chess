@@ -1,6 +1,6 @@
 from itertools import product
 
-from chess.exceptions import IllegalMoveError, InvalidPieceSymbolError
+from chess.exceptions import IllegalMoveError
 from chess.route import Route
 
 
@@ -23,10 +23,7 @@ class PieceFactory(object):
         :param symbol: Symbol of the piece
         :return: Piece
         """
-        try:
-            return self.symbols_dir[symbol]
-        except KeyError:
-            raise InvalidPieceSymbolError
+        return self.symbols_dir[symbol]
 
 
 class Piece(object):
