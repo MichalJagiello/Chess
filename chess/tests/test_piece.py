@@ -1,6 +1,7 @@
 import unittest
+from collections import namedtuple
 
-from chess.board_loc import Move, Location
+from chess.board_loc import Location
 from chess.exceptions import IllegalMoveError
 from chess.piece import (
     PieceFactory,
@@ -11,6 +12,9 @@ from chess.piece import (
     Rook,
     Bishop,
 )
+
+
+Move = namedtuple('Move', ['src', 'dst'])
 
 
 class PieceTestCase(unittest.TestCase):
@@ -91,6 +95,19 @@ class PieceTestCase(unittest.TestCase):
         self.assertFalse(black_king.is_white)
         self.assertEqual(black_king.get_symbol(), symbol)
 
+    def test_pawn_first_move(self):
+        white_pawn = self.piece_factory.create('P')
+        black_pawn = self.piece_factory.create('p')
+
+        white_first_move = Move(src=Location("b2"), dst=Location("b4"))
+        black_first_move = Move(src=Location("g7"), dst=Location("g5"))
+
+        self.assertTrue(white_pawn._first_move(white_first_move))
+        self.assertFalse(white_pawn._first_move(black_first_move))
+
+        self.assertTrue(black_pawn._first_move(black_first_move))
+        self.assertFalse(black_pawn._first_move(white_first_move))
+
     def test_pawn_move(self):
         white_pawn = self.piece_factory.create('P')
         black_pawn = self.piece_factory.create('p')
@@ -103,3 +120,31 @@ class PieceTestCase(unittest.TestCase):
 
         move = Move(src=Location("b2"), dst=Location("b1"))  # white move down
         self.assertRaises(IllegalMoveError, white_pawn.get_route, move)
+
+        move = Move(src=Location("g1"), dst=Location("f1"))  # black move up
+        self.assertRaises(IllegalMoveError, black_pawn.get_route, move)
+
+        move = Move(src=Location("b2"), dst=Location("b4"))  # white piece first move
+        route = white_pawn.get_route(move)
+        self.assertFalse(route.must_be_attack)
+        self.assertTrue(route.must_not_be_attack)
+
+        # white piece not first two fields move
+        move = Move(src=Location("b3"), dst=Location("b5"))
+        self.assertRaises(IllegalMoveError, white_pawn.get_route, move)
+
+        # black piece first move
+        move = Move(src=Location("b7"), dst=Location("b5"))
+        route = black_pawn.get_route(move)
+        self.assertFalse(route.must_be_attack)
+        self.assertTrue(route.must_not_be_attack)
+
+        # black piece not first two fields move
+        move = Move(src=Location("b6"), dst=Location("b4"))
+        self.assertRaises(IllegalMoveError, black_pawn.get_route, move)
+
+        # white move attack
+        move = Move(src=Location("b3"), dst=Location("a4"))
+        route = white_pawn.get_route(move)
+        self.assertTrue(route.must_be_attack)
+        self.assertFalse(route.must_not_be_attack)
