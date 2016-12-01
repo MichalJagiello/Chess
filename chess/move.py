@@ -74,7 +74,7 @@ class NormalMove(Move):
         self.route = self.src_piece.get_route(self)
         self._check_dst_field()
         self._player = self._session.current_player
-        self._session.board[self.dst] = self._session.board.pop(self.src)
+        self._session.board[self.dst] = self._session.board.pop_piece(self.src)
         if isinstance(self.dst_piece, King):
             if self._player.can_kingside_castling:
                 self._player.can_kingside_castling = False
