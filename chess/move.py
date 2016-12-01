@@ -216,7 +216,7 @@ class CastlingMove(Move):
         return self._is_white_to_y_label[self._session.is_white_move]
 
 
-class QueensideCastlingMove(Move):
+class QueensideCastlingMove(CastlingMove):
 
     move_error_msg = 'Queenside castling is not possible.'
 
@@ -229,7 +229,7 @@ class QueensideCastlingMove(Move):
         return self._session.current_player.can_queenside_castling
 
 
-class KingsideCastlingMove(Move):
+class KingsideCastlingMove(CastlingMove):
 
     move_error_msg = 'Kingside castling is not possible.'
 
