@@ -74,9 +74,9 @@ class NormalMove(Move):
     def _set_king_or_queen_castling(self, src, is_white_move):
         label = src.loc_label.lower()
         if (is_white_move and label == 'a1') or (not is_white_move and label == 'a8'):
-            self._player.can_king_castling = False
-        elif (is_white_move and label == 'h1') or (not is_white_move and label == 'ah'):
             self._player.can_queen_castling = False
+        elif (is_white_move and label == 'h1') or (not is_white_move and label == 'ah'):
+            self._player.can_king_castling = False
 
 
 class LeftCastlingMove(Move):
