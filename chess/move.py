@@ -45,7 +45,7 @@ class NormalMove(Move):
         # TODO
 
     @staticmethod
-    def _check_src_not_empty(self, piece):
+    def _check_src_not_empty(piece):
         if piece is None:
             raise IllegalMoveError('Source location does not contain any figure.')
 
