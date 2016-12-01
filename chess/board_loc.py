@@ -102,6 +102,10 @@ class Location(object):
         assert isinstance(dst, Location)
         return list(self._iter_intermediate_locations(dst))
 
+    @staticmethod
+    def make_loc_label(x_label, y_label):
+        return '{}{}'.format(x_label, y_label)
+
     # non-public helpers:
 
     def _parse_loc_label(self, loc_label):
@@ -152,5 +156,5 @@ class Location(object):
 
     @classmethod
     def _new_from_x_y(cls, x, y):
-        loc_label = '{}{}'.format(_X_LABELS[x], _Y_LABELS[y])
+        loc_label = cls.make_loc_label(_X_LABELS[x], _Y_LABELS[y])
         return cls(loc_label)
