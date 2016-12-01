@@ -2,32 +2,22 @@ from chess.session import Session
 
 
 class Drawer(object):
+    line_pattern = '{row_num} | {row} | {row_num}'
+    field_sep = ' | '
+    horizontal_line = '  ' + '-' * 33
+    x_label_pattern = '  | {lables} |'
 
     def show(self, session):
-        field_sep = ' | '
-        print '\nPlayer: {}\n'.format(session.white.name)
-        line_symbol = '  ' + '-' * 33
         board = session.board
-        x_labels = session.board.iter_x_labels()
-        x_label_bar = '{x}|{lables}'.format(x='    ', lables=field_sep.join(x_labels))
+        x_label_bar = self.x_label_pattern.format(lables=self.field_sep.join(board.iter_x_labels()))
+        print '\nPlayer: {}\n'.format(session.white.name)
         print x_label_bar
-        print line_symbol
+        print self.horizontal_line
         for i, row in enumerate(board.iter_rows()):
-            row_repr = self.get_repr_row(row)
-            line = '{row_num} | {row} | {row_num}'
-            print line.format(row_num=(7 - i + 1), row=field_sep.join(row_repr))
-            print line_symbol
-
+            row_repr = self._get_repr_row(row)
+            print self.line_pattern.format(row_num=(7 - i + 1), row=self.field_sep.join(row_repr))
+            print self.horizontal_line
         print x_label_bar
-    def get_repr_row(self, row):
 
+    def _get_repr_row(self, row):
         return (x.get_symbol() if x else ' ' for x in row)
-
-    def get_field_symbol(self, field):
-
-        return field
-if __name__ == '__main__':
-    session = Session('White', 'Black')
-    session.board.setup()
-    drawer = Drawer()
-    drawer.show(session)

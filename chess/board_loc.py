@@ -81,9 +81,11 @@ class Location(object):
 
     def __init__(self, loc_label):
         assert isinstance(loc_label, str)
-        loc_label = loc_label.lower()
-        self._x, self._y = self._parse_loc_label(loc_label)
-        self.loc_label = loc_label
+        self.loc_label = loc_label.lower()
+        (self.x_label,
+         self.y_label,
+         self._x,
+         self._y) = self._parse_loc_label(self.loc_label)
 
     def __repr__(self):
         return '{0.__class__.__name__}({0.loc_label!r})'.format(self)
@@ -110,7 +112,7 @@ class Location(object):
         except (ValueError, KeyError):
             raise InvalidLocationLabelError(
                 '{!r} is not a valid location label.'.format(loc_label))
-        return x, y
+        return x_label, y_label, x, y
 
     @staticmethod
     def _parse_x_label(x_label):
