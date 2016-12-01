@@ -70,8 +70,9 @@ class Board(object):
                 symbols,
                 _X_LABELS))
         y = Location._parse_y_label(y_label)
-        self._rows_of_fields[y][:] = [self._piece_factory.create(s)
-                                      for s in symbols]
+        self._rows_of_fields[y][:] = [
+            (None if s == ' ' else self._piece_factory.create(s))
+            for s in symbols]
 
 
 class Location(object):
