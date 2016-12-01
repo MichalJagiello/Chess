@@ -58,6 +58,7 @@ class NormalMove(Move):
         self._session = session
         self.src = Location(src_label)
         self.dst = Location(dst_label)
+        self.piece = self._session.board[self.src]
 
     def get_vector(self):
         return self.src.get_vector(self.dst)
@@ -67,31 +68,30 @@ class NormalMove(Move):
 
     def execute(self):
         player = self._session.current_player
-        piece = self._session.board[self.src]
-        self._check_src_not_empty(piece)
-        self._check_if_player_owns_src_piece(piece)
-        route = piece.get_route(self)
-        self._check_dst_field(route, piece)
+        self._check_src_not_empty()
+        self._check_if_player_owns_src_piece()
+        self._check_src_dst_are_different()
+        route = self.piece.get_route(self)
         self._check_path(route)
-        piece = self._session.board.pop_piece(self.src)
-        self._session.board[self.dst] = piece
-        if isinstance(piece, King):
+        self._check_dst_field(route)
+        del self._session.board[self.src]
+        self._session.board[self.dst] = self.piece
+        if isinstance(self.piece, King):
             player.can_kingside_castling = False
             player.can_queenside_castling = False
-        if isinstance(piece, Rook):
+        if isinstance(self.piece, Rook):
             self._set_king_or_queenside_castling(self.src, self._session.is_white_move)
 
-    @staticmethod
-    def _check_src_not_empty(piece):
-        if piece is None:
+    def _check_src_not_empty(self):
+        if self.piece is None:
             raise IllegalMoveError('Source location does not contain any figure.')
 
-    def _check_if_player_owns_src_piece(self, piece):
-        if piece.is_white != self._session.is_white_move:
+    def _check_if_player_owns_src_piece(self):
+        if self.piece.is_white != self._session.is_white_move:
             raise IllegalMoveError('You tried to move not your piece.')
 
     def _check_src_dst_are_different(self):
-        if not any(self.get_vector()):
+        if self.get_vector() == (0, 0):
             raise IllegalMoveError('You tried to move on the same location.')
 
     def _check_path(self, route):
@@ -99,17 +99,17 @@ class NormalMove(Move):
             if self._session.board[loc] is not None:
                 raise IllegalMoveError('Other piece on move path')
 
-    def _check_dst_field(self, route, src_piece):
+    def _check_dst_field(self, route):
         dst_piece = self._session.board[self.dst]
         if route.must_be_attack:
             if not dst_piece:
-                self._check_en_passant(src_piece)
-            elif src_piece.is_white == dst_piece.is_white:
+                self._check_en_passant(self.piece)
+            elif self.piece.is_white == dst_piece.is_white:
                 raise IllegalMoveError('This move has to be an attack')
         if route.must_not_be_attack:
             if dst_piece:
                 raise IllegalMoveError('This move can\'t be an attack')
-        if dst_piece and src_piece.is_white == dst_piece.is_white:
+        if dst_piece and self.piece.is_white == dst_piece.is_white:
             raise IllegalMoveError('You tried to attack your\'s piece')
 
     def _between(self, value, first, second):
@@ -117,11 +117,11 @@ class NormalMove(Move):
             return first < value < second
         return second < value < first
 
-    def _check_en_passant(self, src_piece):
+    def _check_en_passant(self):
         if not self._session.last_move:
             raise IllegalMoveError('Invalid en passant move')
         lm = self._session.last_move
-        if not isinstance(lm.src_piece, Pawn) or not isinstance(src_piece, Pawn):
+        if not isinstance(lm.piece, Pawn) or not isinstance(self.piece, Pawn):
             raise IllegalMoveError('Invalid en passant move')
         if not self._between(self.dst.y_label, lm.src.y_label, lm.dst.y_label):
             raise IllegalMoveError('Invalid en passant move')
