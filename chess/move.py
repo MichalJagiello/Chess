@@ -2,7 +2,8 @@ from chess.board_loc import Location
 from chess.exceptions import IllegalMoveError
 from chess.piece import (
     King,
-    Rook
+    Pawn,
+    Rook,
 )
 from chess.util import critical_part
 
@@ -101,13 +102,30 @@ class NormalMove(Move):
     def _check_dst_field(self, route, src_piece):
         dst_piece = self._session.board[self.dst]
         if route.must_be_attack:
-            if not dst_piece or src_piece.is_white == dst_piece.is_white:
+            if not dst_piece:
+                self._check_en_passant(src_piece)
+            elif src_piece.is_white == dst_piece.is_white:
                 raise IllegalMoveError('This move has to be an attack')
         if route.must_not_be_attack:
             if dst_piece:
                 raise IllegalMoveError('This move can\'t be an attack')
         if dst_piece and src_piece.is_white == dst_piece.is_white:
             raise IllegalMoveError('You tried to attack your\'s piece')
+
+    def _between(self, value, first, second):
+        if first < second:
+            return first < value < second
+        return second < value < first
+
+    def _check_en_passant(self, src_piece):
+        if not self._session.last_move:
+            raise IllegalMoveError('Invalid en passant move')
+        lm = self._session.last_move
+        if not isinstance(lm.src_piece, Pawn) or not isinstance(src_piece, Pawn):
+            raise IllegalMoveError('Invalid en passant move')
+        if not self._between(self.dst.y_label, lm.src.y_label, lm.dst.y_label):
+            raise IllegalMoveError('Invalid en passant move')
+        del self._session.board[lm.dst]
 
     def _set_king_or_queenside_castling(self, src, is_white_move):
         player = self._session.current_player
