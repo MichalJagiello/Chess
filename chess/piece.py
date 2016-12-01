@@ -76,9 +76,11 @@ class Pawn(Piece):
         """
         vector_y = vector[1]
         if first_move:
-            assert 0 < vector_y <= 2
+            if not 0 < vector_y <= 2:
+                raise ValueError
         else:
-            assert vector_y == 1
+            if vector_y != 1:
+                raise ValueError
 
     def check_vector_direction(self, vector):
         """
@@ -92,7 +94,7 @@ class Pawn(Piece):
         try:
             self.check_vector_length(vector, self.first_move(move))
             self.check_vector_direction(vector)
-        except AssertionError:
+        except ValueError:
             raise IllegalMoveError
         # path = move.src.get_path(move.dst)
 
