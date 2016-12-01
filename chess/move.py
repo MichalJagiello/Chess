@@ -14,31 +14,21 @@ class MoveFactory(object):
     _kingside_castling_label = '0-0'
 
     def create(self, session, move_spec):
-
-        """
-
-        :param session:
-        :param move_spec:
-        :return: move
-        :raise: IllegalMoveError
-        """
-
+        from chess.session import ChessGameSession
+        assert isinstance(session, ChessGameSession)
         assert isinstance(move_spec, list)
-
+        assert all(isinstance(item, str) for item in move_spec)
         if len(move_spec) == 2:
-            move = NormalMove(session, move_spec[0],  move_spec[1])
+            move = NormalMove(session, *move_spec)
         elif len(move_spec) == 1:
             if move_spec[0] == self._queenside_castling_label:
                 move = QueensideCastlingMove(session)
             elif move_spec[0] == self._kingside_castling_label:
                 move = KingsideCastlingMove(session)
             else:
-                # not implemented notation
                 raise IllegalMoveError
         else:
-            # not implemented notation
             raise IllegalMoveError
-
         return move
 
 
