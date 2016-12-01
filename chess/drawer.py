@@ -10,7 +10,7 @@ class Drawer(object):
     def show(self, session):
         board = session.board
         x_label_bar = self.x_label_pattern.format(lables=self.field_sep.join(board.iter_x_labels()))
-        print '\nPlayer: {}\n'.format(session.white.name)
+        print '\nPlayer: {}\n'.format(session.players)
         print x_label_bar
         print self.horizontal_line
         for i, row in enumerate(board.iter_rows()):

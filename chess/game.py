@@ -50,9 +50,8 @@ class ChessMajsterGame(object):
                 which_player = 'White'
             else:
                 which_player = 'Black'
-            src, dst = self._get_coords(which_player)
             try:
-                self.session.do_move(src, dst)
+                self.session.do_move(self._get_coords(which_player))
             except IllegalMoveError as exc:
                 is_new_turn = False
                 print exc
@@ -72,6 +71,8 @@ class ChessMajsterGame(object):
                 try:
                     src, dst = user_input.split(self.COORD_SEPARATOR)
                 except ValueError:
-                    print "You did not enter two proper coordinates."
-                    continue
-                return src, dst
+                    return [user_input]
+                # except ValueError:
+                #     print "You did not enter two proper coordinates."
+                #     continue
+                return [src, dst]
