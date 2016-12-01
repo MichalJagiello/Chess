@@ -18,15 +18,14 @@ class MoveFactory(object):
             move = NormalMove(session, move_spec[0],  move_spec[1])
         elif len(move_spec) == 1:
             if move_spec[0] == QueenCastlingMove.notation:
-                move = QueenCastlingMove()
+                move = QueenCastlingMove(session)
             elif move_spec[0] == KingCastlingMove.notation:
-                move = KingCastlingMove()
+                move = KingCastlingMove(session)
             else:
                 # not implemented notation
                 raise IllegalMoveError
         else:
             # not implemented notation
-
             raise IllegalMoveError
 
         return move
