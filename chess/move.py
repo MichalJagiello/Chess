@@ -14,8 +14,8 @@ class MoveFactory(object):
     _kingside_castling_label = '0-0'
 
     def create(self, session, move_spec):
-        from chess.session import ChessGameSession
-        assert isinstance(session, ChessGameSession)
+        #from chess.session import ChessGameSession
+        #assert isinstance(session, ChessGameSession)
         assert isinstance(move_spec, list)
         assert all(isinstance(item, str) for item in move_spec)
         if len(move_spec) == 2:
@@ -45,10 +45,11 @@ class NormalMove(Move):
 
     def __init__(self, session, src_label, dst_label):
         super(NormalMove, self).__init__(session)
-        self._session = session
         self.src = Location(src_label)
         self.dst = Location(dst_label)
-        self.piece = self._session.board[self.src]
+        self.piece = session.board[self.src]
+        self._session = session
+        self._en_passant_attack_dst = None
 
     def get_vector(self):
         return self.src.get_vector(self.dst)
@@ -57,37 +58,51 @@ class NormalMove(Move):
         return self.src.get_path(self.dst)
 
     def execute(self):
-        player = self._session.current_player
+        self._validate_and_prepare()
+        with critical_part():
+            self._mutate_board()
+            self._maintain_future_castlings()
+
+    # non-public helpers:
+
+    def _validate_and_prepare(self):
         self._check_src_not_empty()
         self._check_if_player_owns_src_piece()
-        self._check_src_dst_are_different()
+        self._check_src_dst_are_distinct()
         route = self.piece.get_route(self)
         self._check_path(route)
         self._check_dst_field(route)
-        del self._session.board[self.src]
-        self._session.board[self.dst] = self.piece
-        if isinstance(self.piece, King):
-            player.can_kingside_castling = False
+
+    def _mutate_board(self):
+        moved_piece = self._session.board.pop_piece(self.src)
+        assert moved_piece is self.piece
+        self._session.board[self.dst] = moved_piece
+        if self._en_passant_attack_dst:
+            del self._session.board[self._en_passant_attack_dst]
+
+    def _maintain_future_castlings(self):
+        player = self._session.current_player
+        if self._should_disable_queenside_castlings():
             player.can_queenside_castling = False
-        if isinstance(self.piece, Rook):
-            self._set_king_or_queenside_castling(self.src, self._session.is_white_move)
+        if self._should_disable_kingside_castlings():
+            player.can_kingside_castling = False
 
     def _check_src_not_empty(self):
         if self.piece is None:
             raise IllegalMoveError('Source location does not contain any figure.')
 
     def _check_if_player_owns_src_piece(self):
-        if self.piece.is_white != self._session.is_white_move:
+        if self.piece.is_white != self._session.is_white_turn:
             raise IllegalMoveError('You tried to move not your piece.')
 
-    def _check_src_dst_are_different(self):
+    def _check_src_dst_are_distinct(self):
         if self.get_vector() == (0, 0):
-            raise IllegalMoveError('You tried to move on the same location.')
+            raise IllegalMoveError('You tried to move to the same location.')
 
     def _check_path(self, route):
         for loc in route.path:
             if self._session.board[loc] is not None:
-                raise IllegalMoveError('Other piece on move path')
+                raise IllegalMoveError('Other piece on move path.')
 
     def _check_dst_field(self, route):
         dst_piece = self._session.board[self.dst]
@@ -95,35 +110,44 @@ class NormalMove(Move):
             if not dst_piece:
                 self._check_en_passant()
             elif self.piece.is_white == dst_piece.is_white:
-                raise IllegalMoveError('This move has to be an attack')
+                raise IllegalMoveError('This move has to be an attack.')
         if route.must_not_be_attack:
             if dst_piece:
-                raise IllegalMoveError('This move can\'t be an attack')
+                raise IllegalMoveError('This move can\'t be an attack.')
         if dst_piece and self.piece.is_white == dst_piece.is_white:
-            raise IllegalMoveError('You tried to attack your\'s piece')
+            raise IllegalMoveError('You tried to attack your\'s piece.')
+
+    def _check_en_passant(self):
+        if not self._session.last_move:
+            raise IllegalMoveError('Invalid en passant attack.')
+        last_move = self._session.last_move
+        if not isinstance(self.piece, Pawn) or not isinstance(last_move.piece, Pawn):
+            raise IllegalMoveError('Invalid en passant attack.')
+        if not self._between(
+                self.dst.y_label,
+                last_move.src.y_label,
+                last_move.dst.y_label):
+            raise IllegalMoveError('Invalid en passant attack.')
+        self._en_passant_attack_dst = last_move.dst
 
     def _between(self, value, first, second):
         if first < second:
             return first < value < second
         return second < value < first
 
-    def _check_en_passant(self):
-        if not self._session.last_move:
-            raise IllegalMoveError('Invalid en passant move')
-        lm = self._session.last_move
-        if not isinstance(lm.piece, Pawn) or not isinstance(self.piece, Pawn):
-            raise IllegalMoveError('Invalid en passant move')
-        if not self._between(self.dst.y_label, lm.src.y_label, lm.dst.y_label):
-            raise IllegalMoveError('Invalid en passant move')
-        del self._session.board[lm.dst]
+    def _should_disable_queenside_castlings(self):
+        is_white_turn = self._session.is_white_turn
+        return isinstance(self.piece, King) or (
+            isinstance(self.piece, Rook) and (
+                (self.src.loc_label == 'a1' and is_white_turn) or
+                (self.src.loc_label == 'a8' and not is_white_turn)))
 
-    def _set_king_or_queenside_castling(self, src, is_white_move):
-        player = self._session.current_player
-        label = src.loc_label.lower()
-        if (is_white_move and label == 'a1') or (not is_white_move and label == 'a8'):
-            player.can_queenside_castling = False
-        elif (is_white_move and label == 'h1') or (not is_white_move and label == 'ah'):
-            player.can_kingside_castling = False
+    def _should_disable_kingside_castlings(self):
+        is_white_turn = self._session.is_white_turn
+        return isinstance(self.piece, King) or (
+            isinstance(self.piece, Rook) and (
+                (self.src.loc_label == 'h1' and is_white_turn) or
+                (self.src.loc_label == 'h8' and not is_white_turn)))
 
 
 class CastlingMove(Move):
@@ -152,15 +176,17 @@ class CastlingMove(Move):
             # *no* exception should occur here because
             # self._move_the_rook() mutated the session
             self._move_the_king()
-        self._mark_as_done()
+            self._disable_future_castlings()
 
     def can_be_done(self):
         raise NotImplementedError
 
-    def _mark_as_done(self):
+    def _disable_future_castlings(self):
         player = self._session.current_player
         player.can_queenside_castling = False
         player.can_kingside_castling = False
+
+    # non-public helpers:
 
     def _move_the_rook(self):
         rook_move = self._get_rook_move()
@@ -202,7 +228,7 @@ class CastlingMove(Move):
         return Location(loc_label)
 
     def _get_y_label(self):
-        return self._is_white_to_y_label[self._session.is_white_move]
+        return self._is_white_to_y_label[self._session.is_white_turn]
 
 
 class QueensideCastlingMove(CastlingMove):
