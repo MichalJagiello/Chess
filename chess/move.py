@@ -32,14 +32,18 @@ class NormalMove(Move):
         self.dst_loc = self._session.board[self.dst]
 
     def get_vector(self):
-        self.src.get_vector(self._dst_label)
+        return self.src.get_vector(self._dst_label)
 
     def get_path(self):
-        self.src.get_path(self._dst_label)
+        return self.src.get_path(self._dst_label)
 
     def execute(self):
         pass
         # TODO
+
+    def _check_src_dst_are_different(self):
+        if not any(self.get_vector()):
+            raise IllegalMoveError('You tried to move on the same location.')
 
 
 class LeftCastlingMove(Move):
