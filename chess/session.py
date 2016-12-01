@@ -1,5 +1,3 @@
-from collections import namedtuple
-
 from chess.board_loc import (
     Board,
     Location,
