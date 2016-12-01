@@ -35,6 +35,7 @@ class NormalMove(Move):
         self._check_src_not_empty(self.src_piece)
         self._check_if_player_owns_src_piece(self.src_piece)
         self.route = self.src_piece.get_route(self)
+        self._check_dst_field()
         self._player = self._session.current_player
         if isinstance(self.src_piece, King):
             if self._player.can_king_castling:
