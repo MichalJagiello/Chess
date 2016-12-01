@@ -1,8 +1,5 @@
 from chess.board_loc import Location
-from chess.exceptions import (
-    IllegalMoveError,
-    InvalidLocationLabelError
-)
+from chess.exceptions import IllegalMoveError
 from chess.piece import Piece
 from chess.util import critical_part
 

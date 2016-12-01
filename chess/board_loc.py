@@ -1,9 +1,6 @@
 from collections import namedtuple
 
-from chess.exceptions import (
-    IllegalMoveError,
-    InvalidLocationLabelError,
-)
+from chess.exceptions import IllegalMoveError
 from chess.piece import (
     Piece,
     PieceFactory,
@@ -114,7 +111,7 @@ class Location(object):
             x = self._parse_x_label(x_label)
             y = self._parse_y_label(y_label)
         except (ValueError, KeyError):
-            raise InvalidLocationLabelError(
+            raise IllegalMoveError(
                 '{!r} is not a valid location label.'.format(loc_label))
         return x_label, y_label, x, y
 

@@ -10,10 +10,7 @@ from chess.board_loc import (
     Board,
     Location,
 )
-from chess.exceptions import (
-    IllegalMoveError,
-    InvalidLocationLabelError,
-)
+from chess.exceptions import IllegalMoveError
 from chess.piece import (
     Piece,
     PieceFactory,
@@ -321,7 +318,7 @@ class TestLocation(unittest.TestCase):
 
     @foreach(init_raising_error_cases)
     def test_init_raising_error(self, given_loc_label):
-        with self.assertRaises(InvalidLocationLabelError):
+        with self.assertRaises(IllegalMoveError):
             Location(given_loc_label)
 
     @foreach(get_vector_cases)
