@@ -14,7 +14,17 @@ from chess.piece import (
 )
 
 
-Move = namedtuple('Move', ['src', 'dst'])
+class Move(object):
+
+    def __init__(self, src, dst):
+        self.src = src
+        self.dst = dst
+
+    def get_vector(self):
+        return self.src.get_vector(self.dst)
+
+    def get_path(self):
+        return self.src.get_path(self.dst)
 
 
 class PieceTestCase(unittest.TestCase):

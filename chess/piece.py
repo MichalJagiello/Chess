@@ -61,13 +61,13 @@ class Pawn(Piece):
     _raw_symbol = 'P'
 
     def get_route(self, move):
-        vector = move.src.get_vector(move.dst)
+        vector = move.get_vector()
         try:
             self._check_vector_y_length(vector, self._first_move(move))
             self._check_vector_direction(vector)
         except ValueError:
             raise IllegalMoveError
-        path = move.src.get_path(move.dst)
+        path = move.get_path()
         if self._is_attack(vector):
             return Route(path, must_be_attack=True, must_not_be_attack=False)
         return Route(path, must_be_attack=False, must_not_be_attack=True)
@@ -107,7 +107,11 @@ class Pawn(Piece):
         """
         Return True if move is an attack
         """
-        return all(vector)
+        if all(vector):
+            if abs(vector[0]) != 1 and abs(vector[1]) != 1:
+                raise IllegalMoveError
+            return True
+        return False
 
 
 class Knight(Piece):
@@ -126,10 +130,10 @@ class Bishop(Piece):
     _raw_symbol = 'B'
 
     def get_route(self, move):
-        vector = move.src.get_vector(move.dst)
+        vector = move.get_vector()
         if abs(vector[0]) != abs(vector[1]):
             raise IllegalMoveError
-        return Route(move.src.get_path(move.dst))
+        return Route(move.get_path())
 
 class Rook(Piece):
 
