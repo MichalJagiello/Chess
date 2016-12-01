@@ -1,6 +1,7 @@
 from itertools import product
 
 from chess.exceptions import IllegalMoveError, InvalidPieceSymbolError
+from chess.route import Route
 
 
 class PieceFactory(object):
@@ -59,42 +60,54 @@ class Pawn(Piece):
 
     _raw_symbol = 'P'
 
-    def first_move(self, move):
-        return True  # TODO: temporary
+    def get_route(self, move):
+        vector = move.src.get_vector(move.dst)
+        try:
+            self._check_vector_y_length(vector, self._first_move(move))
+            self._check_vector_direction(vector)
+        except ValueError:
+            raise IllegalMoveError
+        path = move.src.get_path(move.dst)
+        if self._is_attack(vector):
+            return Route(path, must_be_attack=True, must_not_be_attack=False)
+        return Route(path, must_be_attack=False, must_not_be_attack=True)
 
-    def check_vector_length(self, vector, first_move):
+    def _first_move(self, move):
+        """
+        Checks if given move is a first move
+        for a pawn
+        """
+        if self.is_white:
+            return move.src.loc_label[1] == "2"
+        return move.src.loc_label[1] == "7"
+
+    def _check_vector_y_length(self, vector, first_move):
         """
         Pawn can move only by one field if it
         is not it's first move. Otherwise
         it can move by two fields.
-
-        :param vector:
-        :return:
         """
-        vector_y = vector[1]
+        vector_y = abs(vector[1])
         if first_move:
-            assert 0 < vector_y <= 2
+            if not 0 < vector_y <= 2:
+                raise ValueError
         else:
-            assert vector_y == 1
+            if vector_y != 1:
+                raise ValueError
 
-    def check_vector_direction(self, vector):
+    def _check_vector_direction(self, vector):
         """
         Pawn move direction depends on it's color.
         It can move up if it's white. Down otherwise
-
-        :param vector:
-        :return:
         """
-        assert vector[1] * -1 ** int(self.is_white) < 0
+        if vector[1] * (-1) ** int(self.is_white) > 0:
+            raise ValueError
 
-    def get_route(self, move):
-        vector = move.src.get_vector(move.dst)
-        try:
-            self.check_vector_length(vector, self.first_move(move))
-            self.check_vector_direction(vector)
-        except AssertionError:
-            raise IllegalMoveError
-        # path = move.src.get_path(move.dst)
+    def _is_attack(self, vector):
+        """
+        Return True if move is an attack
+        """
+        return all(vector)
 
 
 class Knight(Piece):
