@@ -5,8 +5,8 @@ import traceback
 @contextlib.contextmanager
 def critical_part():
     """
-    Use it if any exception within the `with` block would mean that
-    the state of the program is inconsistent.
+    Use it if an exception within the `with` block could cause that
+    the state of the program becomes inconsistent.
     """
     try:
         yield

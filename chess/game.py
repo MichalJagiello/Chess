@@ -45,7 +45,7 @@ class ChessMajsterGame(object):
         while True:
             if is_new_turn:
                 self.drawer.show(self.session)
-            if self.session.is_white_move:
+            if self.session.is_white_turn:
                 which_player = 'White'
             else:
                 which_player = 'Black'
