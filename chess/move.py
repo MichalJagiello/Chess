@@ -103,7 +103,7 @@ class NormalMove(Move):
         dst_piece = self._session.board[self.dst]
         if route.must_be_attack:
             if not dst_piece:
-                self._check_en_passant(self.piece)
+                self._check_en_passant()
             elif self.piece.is_white == dst_piece.is_white:
                 raise IllegalMoveError('This move has to be an attack')
         if route.must_not_be_attack:
