@@ -107,7 +107,11 @@ class Pawn(Piece):
         """
         Return True if move is an attack
         """
-        return all(vector)
+        if all(vector):
+            if abs(vector[0]) != 1 and abs(vector[1]) != 1:
+                raise IllegalMoveError
+            return True
+        return False
 
 
 class Knight(Piece):
