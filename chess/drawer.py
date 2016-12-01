@@ -1,15 +1,13 @@
-from chess.session import Session
-
-
 class Drawer(object):
     line_pattern = '{row_num} | {row} | {row_num}'
     field_sep = ' | '
     horizontal_line = '  ' + '-' * 33
-    x_label_pattern = '  | {lables} |'
+    x_label_pattern = '  | {labels} |'
 
     def show(self, session):
         board = session.board
-        x_label_bar = self.x_label_pattern.format(lables=self.field_sep.join(board.iter_x_labels()))
+        x_label_bar = self.x_label_pattern.format(
+            labels=self.field_sep.join(board.iter_x_labels()))
         print '\nPlayer: {}\n'.format(session.white.name)
         print x_label_bar
         print self.horizontal_line
