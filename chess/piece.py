@@ -115,7 +115,7 @@ class Knight(Piece):
     _raw_symbol = 'N'
 
     def get_route(self, move):
-        vector = move.src.get_vector(move.dst)
+        vector = move.get_vector()
         if [1, 2] != sorted(map(abs, vector)):
             raise IllegalMoveError
         return Route([])
@@ -129,6 +129,13 @@ class Bishop(Piece):
 class Rook(Piece):
 
     _raw_symbol = 'R'
+
+    def get_route(self, move):
+        vector = move.get_vector()
+        if 0 in vector:
+            return Route(move.get_path())
+        raise IllegalMoveError
+
 
 
 class Queen(Piece):
