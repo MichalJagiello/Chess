@@ -36,6 +36,13 @@ class NormalMove(Move):
         self._check_if_player_owns_src_piece(self.src_piece)
         self.route = self.src_piece.get_route(self)
         self._player = self._session.current_player
+        if isinstance(self.src_piece, King):
+            if self._player.can_king_castling:
+                self._player.can_king_castling = False
+            if self._player.can_queen_castling:
+                self._player.can_queen_castling = False
+        if isinstance(self.src_piece, Rook):
+            self._set_king_or_queen_castling(self.src, self._session.is_white_move)
 
     def get_vector(self):
         return self.src.get_vector(self.dst)
@@ -63,6 +70,13 @@ class NormalMove(Move):
         for field in self.route:
             if self._session.board[field] is not None:
                 raise IllegalMoveError('Other piece on move path')
+
+    def _set_king_or_queen_castling(self, src, is_white_move):
+        label = src.loc_label.lower()
+        if (is_white_move and label == 'a1') or (not is_white_move and label == 'a8'):
+            self._player.can_queen_castling = False
+        elif (is_white_move and label == 'h1') or (not is_white_move and label == 'ah'):
+            self._player.can_king_castling = False
 
     def _check_dst_field(self):
         if self.route.must_be_attack:
