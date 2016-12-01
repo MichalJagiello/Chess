@@ -10,10 +10,7 @@ from chess.board_loc import (
     Board,
     Location,
 )
-from chess.exceptions import (
-    IllegalMoveError,
-    InvalidLocationLabelError,
-)
+from chess.exceptions import IllegalMoveError
 from chess.piece import (
     Piece,
     PieceFactory,
@@ -163,7 +160,7 @@ class TestBoard(unittest.TestCase):
 @expand
 class TestLocation(unittest.TestCase):
 
-    init_repr_str_cases = [
+    init_and_basics_cases = [
         # location label
         'a1',
         'b1',
@@ -305,19 +302,23 @@ class TestLocation(unittest.TestCase):
         ('f2', 'b7'),
     ]
 
-    @foreach(init_repr_str_cases)
-    def test_init_repr_str(self, given_loc_label):
+    @foreach(init_and_basics_cases)
+    def test_init_and_basics(self, given_loc_label):
         loc = Location(given_loc_label)
         expected_loc_label = given_loc_label.lower()
+        expected_x_label = expected_loc_label[0]
+        expected_y_label = expected_loc_label[1]
         expected_repr = "Location('{}')".format(expected_loc_label)
         expected_str = expected_loc_label
         self.assertEqual(loc.loc_label, expected_loc_label)
+        self.assertEqual(loc.x_label, expected_x_label)
+        self.assertEqual(loc.y_label, expected_y_label)
         self.assertEqual(repr(loc), expected_repr)
         self.assertEqual(str(loc), expected_str)
 
     @foreach(init_raising_error_cases)
     def test_init_raising_error(self, given_loc_label):
-        with self.assertRaises(InvalidLocationLabelError):
+        with self.assertRaises(IllegalMoveError):
             Location(given_loc_label)
 
     @foreach(get_vector_cases)

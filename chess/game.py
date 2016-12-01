@@ -25,7 +25,6 @@ class ChessMajsterGame(object):
         self.session = Session(white_player_name,  black_player_name)
         self.session.setup()
         self.drawer = Drawer()
-        self.drawer.show(self.session)
         self._play_turns()
 
     def _get_player_name(self, player_color):
@@ -50,9 +49,8 @@ class ChessMajsterGame(object):
                 which_player = 'White'
             else:
                 which_player = 'Black'
-            src, dst = self._get_coords(which_player)
             try:
-                self.session.do_move(src, dst)
+                self.session.do_move(self._get_coords(which_player))
             except IllegalMoveError as exc:
                 is_new_turn = False
                 print exc
@@ -64,14 +62,14 @@ class ChessMajsterGame(object):
             print "{0} player turn".format(which_player)
             print "Enter your move's coordinates separated by space:"
             user_input = raw_input()
-            if not user_input:
-                print "You did not enter proper coordinates."
             if user_input.lower() == self.EXIT_GAME_CMD:
                 sys.exit(self.EXIT_STATUS)
             else:
                 try:
                     src, dst = user_input.split(self.COORD_SEPARATOR)
                 except ValueError:
-                    print "You did not enter two proper coordinates."
-                    continue
-                return src, dst
+                    return [user_input]
+                # except ValueError:
+                #     print "You did not enter two proper coordinates."
+                #     continue
+                return [src, dst]

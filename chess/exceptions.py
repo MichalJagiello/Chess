@@ -10,11 +10,3 @@ class ChessError(Exception):
 
 class IllegalMoveError(ChessError):
     default_msg = 'The requested move is illegal.'
-
-
-class InvalidLocationLabelError(ChessError):
-    default_msg = 'The location label is not valid.'
-
-
-class InvalidPieceSymbolError(ChessError):
-    default_msg = 'The piece symbol is not valid.'

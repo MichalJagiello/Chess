@@ -1,9 +1,6 @@
 from collections import namedtuple
 
-from chess.exceptions import (
-    IllegalMoveError,
-    InvalidLocationLabelError,
-)
+from chess.exceptions import IllegalMoveError
 from chess.piece import (
     Piece,
     PieceFactory,
@@ -81,9 +78,11 @@ class Location(object):
 
     def __init__(self, loc_label):
         assert isinstance(loc_label, str)
-        loc_label = loc_label.lower()
-        self._x, self._y = self._parse_loc_label(loc_label)
-        self.loc_label = loc_label
+        self.loc_label = loc_label.lower()
+        (self.x_label,
+         self.y_label,
+         self._x,
+         self._y) = self._parse_loc_label(self.loc_label)
 
     def __repr__(self):
         return '{0.__class__.__name__}({0.loc_label!r})'.format(self)
@@ -100,6 +99,10 @@ class Location(object):
         assert isinstance(dst, Location)
         return list(self._iter_intermediate_locations(dst))
 
+    @staticmethod
+    def make_loc_label(x_label, y_label):
+        return '{}{}'.format(x_label, y_label)
+
     # non-public helpers:
 
     def _parse_loc_label(self, loc_label):
@@ -108,9 +111,9 @@ class Location(object):
             x = self._parse_x_label(x_label)
             y = self._parse_y_label(y_label)
         except (ValueError, KeyError):
-            raise InvalidLocationLabelError(
+            raise IllegalMoveError(
                 '{!r} is not a valid location label.'.format(loc_label))
-        return x, y
+        return x_label, y_label, x, y
 
     @staticmethod
     def _parse_x_label(x_label):
@@ -150,5 +153,5 @@ class Location(object):
 
     @classmethod
     def _new_from_x_y(cls, x, y):
-        loc_label = '{}{}'.format(_X_LABELS[x], _Y_LABELS[y])
+        loc_label = cls.make_loc_label(_X_LABELS[x], _Y_LABELS[y])
         return cls(loc_label)

@@ -1,6 +1,6 @@
 from itertools import product
 
-from chess.exceptions import IllegalMoveError, InvalidPieceSymbolError
+from chess.exceptions import IllegalMoveError
 from chess.route import Route
 
 
@@ -23,10 +23,7 @@ class PieceFactory(object):
         :param symbol: Symbol of the piece
         :return: Piece
         """
-        try:
-            return self.symbols_dir[symbol]
-        except KeyError:
-            raise InvalidPieceSymbolError
+        return self.symbols_dir[symbol]
 
 
 class Piece(object):
@@ -61,13 +58,13 @@ class Pawn(Piece):
     _raw_symbol = 'P'
 
     def get_route(self, move):
-        vector = move.src.get_vector(move.dst)
+        vector = move.get_vector()
         try:
             self._check_vector_y_length(vector, self._first_move(move))
             self._check_vector_direction(vector)
         except ValueError:
             raise IllegalMoveError
-        path = move.src.get_path(move.dst)
+        path = move.get_path()
         if self._is_attack(vector):
             return Route(path, must_be_attack=True, must_not_be_attack=False)
         return Route(path, must_be_attack=False, must_not_be_attack=True)
@@ -107,22 +104,44 @@ class Pawn(Piece):
         """
         Return True if move is an attack
         """
-        return all(vector)
+        if all(vector):
+            if abs(vector[0]) != 1 and abs(vector[1]) != 1:
+                raise IllegalMoveError
+            return True
+        return False
 
 
 class Knight(Piece):
 
     _raw_symbol = 'N'
 
+    def get_route(self, move):
+        vector = move.get_vector()
+        if [1, 2] != sorted(map(abs, vector)):
+            raise IllegalMoveError
+        return Route([])
+
 
 class Bishop(Piece):
 
     _raw_symbol = 'B'
 
+    def get_route(self, move):
+        vector = move.get_vector()
+        if abs(vector[0]) != abs(vector[1]):
+            raise IllegalMoveError
+        return Route(move.get_path())
 
 class Rook(Piece):
 
     _raw_symbol = 'R'
+
+    def get_route(self, move):
+        vector = move.get_vector()
+        if 0 in vector:
+            return Route(move.get_path())
+        raise IllegalMoveError
+
 
 
 class Queen(Piece):
@@ -133,3 +152,9 @@ class Queen(Piece):
 class King(Piece):
 
     _raw_symbol = 'K'
+
+    def get_route(self, move):
+        vector = move.get_vector()
+        if any(i > 1 for i in map(abs, vector)):
+            raise IllegalMoveError
+        return Route(move.get_path())
