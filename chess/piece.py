@@ -148,6 +148,15 @@ class Queen(Piece):
 
     _raw_symbol = 'Q'
 
+    def get_route(self, move):
+        vector = move.get_vector()
+
+        if all(vector):
+            if abs(vector[0]) != abs(vector[1]):
+                raise IllegalMoveError
+
+        return Route(move.get_path())
+
 
 class King(Piece):
 
