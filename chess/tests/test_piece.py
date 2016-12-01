@@ -148,3 +148,25 @@ class PieceTestCase(unittest.TestCase):
         route = white_pawn.get_route(move)
         self.assertTrue(route.must_be_attack)
         self.assertFalse(route.must_not_be_attack)
+
+    def test_bishop_move(self):
+        bishop = self.piece_factory.create('B')
+
+        move = Move(src=Location("b1"), dst=Location("a3"))
+        self.assertRaises(IllegalMoveError, bishop.get_route, move)
+
+        move = Move(src=Location("b1"), dst=Location("c1"))
+        self.assertRaises(IllegalMoveError, bishop.get_route, move)
+
+        move = Move(src=Location("b1"), dst=Location("b8"))
+        self.assertRaises(IllegalMoveError, bishop.get_route, move)
+
+        moves = [
+            Move(src=Location("b1"), dst=Location("a2")),
+            Move(src=Location("a2"), dst=Location("e6")),
+            Move(src=Location("e6"), dst=Location("g4")),
+            Move(src=Location("g4"), dst=Location("h5")),
+            Move(src=Location("h5"), dst=Location("e8"))
+        ]
+        for move in moves:
+            bishop.get_route(move)
