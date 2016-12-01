@@ -62,8 +62,6 @@ class ChessMajsterGame(object):
             print "{0} player turn".format(which_player)
             print "Enter your move's coordinates separated by space:"
             user_input = raw_input()
-            if not user_input:
-                print "You did not enter proper coordinates."
             if user_input.lower() == self.EXIT_GAME_CMD:
                 sys.exit(self.EXIT_STATUS)
             else:
