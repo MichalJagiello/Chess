@@ -4,7 +4,15 @@ from chess.exceptions import IllegalMoveError
 class MoveFactory(object):
 
     def create(self, session, move_spec):
-        TODO
+        assert isinstance(move_spec, list)
+        try:
+            if len(move_spec) == 2:
+                move = NormalMove(session, move_spec[0],  move_spec[1])
+            elif len(move_spec) == 1:
+                if move_spec[0] == QueenCastlingMove:
+                    move = QueenCastlingMove(move_spec[0])
+                else:
+                    move = KingCastlingMove(move_spec[0])
 
 
 class Move(object):
@@ -26,13 +34,17 @@ class NormalMove(Move):
         TODO
 
 
-class LeftCastlingMove(Move):
+class QueenCastlingMove(Move):
+
+    notation = '0-0-0'
 
     def execute(self):
         TODO
 
 
-class RightCastlingMove(Move):
+class KingCastlingMove(Move):
+
+    notation = '0-0'
 
     def execute(self):
         TODO

@@ -16,10 +16,14 @@ class Session(object):
     def __init__(self, white_name, black_name):
         self.last_move = None
         self.is_white_move = True
-        self.white = Player(white_name)
-        self.black = Player(black_name)
+        self.players = {True: Player(white_name),
+                        False: Player(black_name)}
         self.board = Board()
         self._mover = Mover()
+
+    @property
+    def current_player(self):
+        return self.players[self.is_white_move]
 
     def setup(self):
         self.board.setup()
