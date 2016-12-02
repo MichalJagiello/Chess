@@ -2,6 +2,7 @@ from chess.session_runner import (
     ChessGameSessionRunner,
     QueensPuzzleSessionRunner,
 )
+from chess.ui import UserInput
 
 
 class ChessMajsterGame(UserInput):
