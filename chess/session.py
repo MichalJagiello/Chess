@@ -83,6 +83,7 @@ class QueensPuzzleSession(PuzzleSession):
 
         if self._queen_resolver.is_usable_field(dst):
             self._queen_resolver.reserve_field(dst, self._queen)
+            self.board[dst] = self._queen
             self._queen_count += 1
             if self._queen_count == self.max_queen_count:
                 return True
