@@ -12,9 +12,9 @@ class PieceFactory(object):
         pieces = [Pawn, Knight, Bishop, Rook, Queen, King]
         for piece, is_white in product(pieces, [True, False]):
             if is_white:
-                symbol = piece._raw_symbol.upper()
+                symbol = piece.raw_symbol.upper()
             else:
-                symbol = piece._raw_symbol.lower()
+                symbol = piece.raw_symbol.lower()
             self.symbols_dir[symbol] = piece(is_white)
 
     def create(self, symbol):
@@ -29,7 +29,7 @@ class PieceFactory(object):
 
 class Piece(object):
 
-    _raw_symbol = None
+    raw_symbol = None
 
     def __init__(self, is_white):
         self.is_white = is_white
@@ -41,7 +41,7 @@ class Piece(object):
         :param move: Move
         :return: List of Locations
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def get_symbol(self):
         """
@@ -50,19 +50,18 @@ class Piece(object):
         :return:
         """
         if self.is_white:
-            return self._raw_symbol.upper()
-        return self._raw_symbol.lower()
+            return self.raw_symbol.upper()
+        return self.raw_symbol.lower()
 
     def get_attacked_locations(self, location):
         """
         Get the iterator with locations which can
         be attacked by piece for given location.
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @staticmethod
     def _get_left_diagonal_negative_attack_locations(location):
-
         x_symbol = location.x_label
         y_symbol = location.y_label
         while x_symbol != 'a' and y_symbol != '1':
@@ -72,7 +71,6 @@ class Piece(object):
 
     @staticmethod
     def _get_left_diagonal_positive_attack_locations(location):
-
         x_symbol = location.x_label
         y_symbol = location.y_label
         while x_symbol != 'a' and y_symbol != '8':
@@ -82,7 +80,6 @@ class Piece(object):
 
     @staticmethod
     def _get_right_diagonal_negative_attack_locations(location):
-
         x_symbol = location.x_label
         y_symbol = location.y_label
         while x_symbol != 'h' and y_symbol != '1':
@@ -92,7 +89,6 @@ class Piece(object):
 
     @staticmethod
     def _get_right_diagonal_positive_attack_locations(location):
-
         x_symbol = location.x_label
         y_symbol = location.y_label
         while x_symbol != 'h' and y_symbol != '8':
@@ -102,32 +98,35 @@ class Piece(object):
 
     @classmethod
     def _get_diagonal_attack_locations(cls, location):
-
-        left_diagonal_negative_locations = {location for location in
-                                            cls._get_left_diagonal_negative_attack_locations(location)}
-        left_diagonal_positive_locations = {location for location in
-                                            cls._get_left_diagonal_positive_attack_locations(location)}
-        right_diagonal_negative_locations = {location for location in
-                                             cls._get_right_diagonal_negative_attack_locations(location)}
-        right_diagonal_positive_locations = {location for location in
-                                             cls._get_right_diagonal_positive_attack_locations(location)}
+        left_diagonal_negative_locations = {
+            location for location in
+            cls._get_left_diagonal_negative_attack_locations(location)}
+        left_diagonal_positive_locations = {
+            location for location in
+            cls._get_left_diagonal_positive_attack_locations(location)}
+        right_diagonal_negative_locations = {
+            location for location in
+            cls._get_right_diagonal_negative_attack_locations(location)}
+        right_diagonal_positive_locations = {
+            location for location in
+            cls._get_right_diagonal_positive_attack_locations(location)}
         return list(left_diagonal_negative_locations ^ left_diagonal_positive_locations ^
                     right_diagonal_negative_locations ^ right_diagonal_positive_locations)
 
     @classmethod
     def _get_straight_line_attack_locations(cls, location):
-
-        x_line_locs_set = {Location("{}{}".format(*loc_label))
-                           for loc_label in product(location.x_label, Board.iter_y_labels())}
-        y_line_locs_set = {Location("{}{}".format(*loc_label))
-                           for loc_label in product(Board.iter_x_labels(), location.y_label)}
-
+        x_line_locs_set = {
+            Location("{}{}".format(*loc_label))
+            for loc_label in product(location.x_label, Board.iter_y_labels())}
+        y_line_locs_set = {
+            Location("{}{}".format(*loc_label))
+            for loc_label in product(Board.iter_x_labels(), location.y_label)}
         return list(x_line_locs_set ^ y_line_locs_set)
 
 
 class Pawn(Piece):
 
-    _raw_symbol = 'P'
+    raw_symbol = 'P'
 
     def get_route(self, move):
         vector = move.get_vector()
@@ -185,7 +184,7 @@ class Pawn(Piece):
 
 class Knight(Piece):
 
-    _raw_symbol = 'N'
+    raw_symbol = 'N'
 
     def get_route(self, move):
         vector = move.get_vector()
@@ -196,7 +195,7 @@ class Knight(Piece):
 
 class Bishop(Piece):
 
-    _raw_symbol = 'B'
+    raw_symbol = 'B'
 
     def get_route(self, move):
         vector = move.get_vector()
@@ -210,7 +209,7 @@ class Bishop(Piece):
 
 class Rook(Piece):
 
-    _raw_symbol = 'R'
+    raw_symbol = 'R'
 
     def get_route(self, move):
         vector = move.get_vector()
@@ -224,27 +223,24 @@ class Rook(Piece):
 
 class Queen(Piece):
 
-    _raw_symbol = 'Q'
+    raw_symbol = 'Q'
 
     def get_route(self, move):
         vector = move.get_vector()
-
         if all(vector):
             if abs(vector[0]) != abs(vector[1]):
                 raise UserActionError
-
         return Route(move.get_path())
 
     def get_attacked_locations(self, location):
         _straight_line_attack_locations = self._get_straight_line_attack_locations(location)
         _diagonal_attack_locations = self._get_diagonal_attack_locations(location)
-
         return list(set(_straight_line_attack_locations) ^ set(_diagonal_attack_locations))
 
 
 class King(Piece):
 
-    _raw_symbol = 'K'
+    raw_symbol = 'K'
 
     def get_route(self, move):
         vector = move.get_vector()
