@@ -14,13 +14,15 @@ class QueenResolver(object):
         """
         return not (loc in self._reserved_fields)
 
-    def reserve_field(self, loc):
+    def reserve_field(self, loc, piece):
         """
         Reserve given field
 
         :param loc: Location
+        :param piece: Piece
         :return:
         """
-        self._reserved_fields.update(loc)
+
+        self._reserved_fields.update(piece.get_attacked_locations(loc))
 
 

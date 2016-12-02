@@ -3,6 +3,7 @@ from chess.move import MoveFactory
 from chess.player import Player
 from resolver import QueenResolver
 from board_loc import Location
+from piece import PieceFactory
 
 
 class Session(object):
@@ -65,6 +66,7 @@ class QueensPuzzleSession(PuzzleSession):
         super(QueensPuzzleSession, self).__init__(*args, **kwargs)
         self._queen_count = 0
         self._queen_resolver = QueenResolver()
+        self._queen = PieceFactory().create('Q')
 
     def setup(self):
         pass
@@ -80,7 +82,7 @@ class QueensPuzzleSession(PuzzleSession):
     def _set_queen(self, dst):
 
         if self._queen_resolver.is_usable_field(dst):
-            self._queen_resolver.reserve_field(dst)
+            self._queen_resolver.reserve_field(dst, self._queen)
             self._queen_count += 1
             if self._queen_count == self.max_queen_count:
                 return True
