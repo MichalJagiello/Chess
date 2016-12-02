@@ -52,6 +52,13 @@ class Piece(object):
             return self._raw_symbol.upper()
         return self._raw_symbol.lower()
 
+    def get_attacked_locations(self, location):
+        """
+        Get the iterator with locations which can
+        be attacked by piece for given location.
+        """
+        raise NotImplementedError()
+
 
 class Pawn(Piece):
 
