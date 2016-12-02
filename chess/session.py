@@ -1,20 +1,11 @@
 from chess.board_loc import Board
 from chess.move import MoveFactory
-from chess.player import Player
 
 
 class Session(object):
 
-    def __init__(self, player_name):
+    def __init__(self):
         self.board = Board()
-        self.players = {
-            True: Player(player_name),
-        }
-        self.is_white_turn = True
-
-    @property
-    def current_player(self):
-        return self.players[self.is_white_turn]
 
     def setup(self):
         raise NotImplementedError
@@ -25,23 +16,44 @@ class Session(object):
 
 class ChessGameSession(Session):
 
-    def __init__(self, white_player_name, black_player_name):
-        super(ChessGameSession, self).__init__(white_player_name)
-        self.players[False] = Player(black_player_name)
+    def __init__(self):
+        super(ChessGameSession, self).__init__()
+        self.players = {is_white: ChessGamePlayer(is_white)
+                        for is_white in [True, False]}
+        self.is_white_turn = True
         self.last_move = None
         self._move_factory = MoveFactory()
+
+    @property
+    def current_player(self):
+        return self.players[self.is_white_turn]
 
     def setup(self):
         self.board.setup()
 
-    def act(self, action_spec_list):
-        self._do_move(move_spec=action_spec_list)
+    def act(self, move_spec):
+        self._do_move(move_spec)
+        return self._is_game_finished()
 
     def _do_move(self, move_spec):
         move = self._move_factory.create(self, move_spec)
         move.execute()
         self.last_move = move
         self.is_white_turn = not self.is_white_turn
+
+    def _is_game_finished(self):
+        return False  # TODO something smarter :-)
+
+
+class ChessGamePlayer(object):
+
+    def __init__(self, is_white):
+        self.player_label = 'White' if is_white else 'Black'
+        self.can_queenside_castling = True
+        self.can_kingside_castling = True
+
+    def __str__(self):
+        return self.player_label
 
 
 class PuzzleSession(Session):
