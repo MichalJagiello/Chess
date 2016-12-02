@@ -9,16 +9,18 @@ class QueenResolver(object):
         """
         Returns boolean value if field is usable to set.
 
-        :param field:
+        :param loc: Location
         :return: bool
         """
-        return loc in self._reserved_fields
+        return not (loc in self._reserved_fields)
 
     def reserve_field(self, loc):
         """
         Reserve given field
 
-        :param loc:
+        :param loc: Location
         :return:
         """
         self._reserved_fields.update(loc)
+
+

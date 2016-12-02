@@ -1,6 +1,8 @@
 from chess.board_loc import Board
 from chess.move import MoveFactory
 from chess.player import Player
+from resolver import QueenResolver
+from board_loc import Location
 
 
 class Session(object):
@@ -57,20 +59,29 @@ class QueensPuzzleSession(PuzzleSession):
     The 8-queen puzzle session class.
     """
 
+    max_queen_count = 8
+
     def __init__(self, *args, **kwargs):
         super(QueensPuzzleSession, self).__init__(*args, **kwargs)
         self._queen_count = 0
-        #self._queen_resolver = 
+        self._queen_resolver = QueenResolver()
 
     def setup(self):
         pass
 
     def act(self, action_spec_list):
-        TODO
-        # try:
-        #     [loc_label] = action_spec_list
-        # except (ValueError, :
-        # self._set_queen(
+        try:
+            [loc_label] = action_spec_list
+        except (ValueError, ):
+            raise
+
+        return self._set_queen(Location(loc_label))
 
     def _set_queen(self, dst):
-        TODO
+
+        if self._queen_resolver.is_usable_field(dst):
+            self._queen_resolver.reserve_field(dst)
+            self._queen_count += 1
+            if self._queen_count == self.max_queen_count:
+                return True
+        return False
