@@ -2,6 +2,7 @@ from chess.board_loc import (
     Board,
     Location,
 )
+from chess.exceptions import UserActionError
 from chess.move import MoveFactory
 from chess.piece import PieceFactory
 from chess.resolver import QueenResolver
@@ -82,12 +83,9 @@ class QueensPuzzleSession(PuzzleSession):
         self._queen_resolver = QueenResolver()
         self._queen = PieceFactory().create('Q')
 
-    def act(self, action_spec_list):
-        try:
-            [loc_label] = action_spec_list
-        except (ValueError, ):
-            raise
-        return self._set_queen(Location(loc_label))
+    def act(self, loc_label):
+        dst = Location(loc_label)
+        return self._set_queen(dst)
 
     def _set_queen(self, dst):
         if self._queen_resolver.is_usable_field(dst):
@@ -96,4 +94,6 @@ class QueensPuzzleSession(PuzzleSession):
             self._queen_count += 1
             if self._queen_count == self.max_queen_count:
                 return True
+        else:
+            raise UserActionError('You cannot place a queen here!')
         return False
