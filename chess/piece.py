@@ -59,6 +59,81 @@ class Piece(object):
         """
         raise NotImplementedError()
 
+    @staticmethod
+    def _get_left_diagonal_negative_attack_locations(location):
+
+        from chess.board_loc import Location
+
+        x_symbol = location.x_label
+        y_symbol = location.y_label
+        while x_symbol != 'a' and y_symbol != '1':
+            x_symbol = chr(ord(x_symbol) - 1)
+            y_symbol = chr(ord(y_symbol) - 1)
+            yield Location("{}{}".format(x_symbol, y_symbol))
+
+    @staticmethod
+    def _get_left_diagonal_positive_attack_locations(location):
+
+        from chess.board_loc import Location
+
+        x_symbol = location.x_label
+        y_symbol = location.y_label
+        while x_symbol != 'a' and y_symbol != '8':
+            x_symbol = chr(ord(x_symbol) - 1)
+            y_symbol = chr(ord(y_symbol) + 1)
+            yield Location("{}{}".format(x_symbol, y_symbol))
+
+    @staticmethod
+    def _get_right_diagonal_negative_attack_locations(location):
+
+        from chess.board_loc import Location
+
+        x_symbol = location.x_label
+        y_symbol = location.y_label
+        while x_symbol != 'h' and y_symbol != '1':
+            x_symbol = chr(ord(x_symbol) + 1)
+            y_symbol = chr(ord(y_symbol) - 1)
+            yield Location("{}{}".format(x_symbol, y_symbol))
+
+    @staticmethod
+    def _get_right_diagonal_positive_attack_locations(location):
+
+        from chess.board_loc import Location
+
+        x_symbol = location.x_label
+        y_symbol = location.y_label
+        while x_symbol != 'h' and y_symbol != '8':
+            x_symbol = chr(ord(x_symbol) + 1)
+            y_symbol = chr(ord(y_symbol) + 1)
+            yield Location("{}{}".format(x_symbol, y_symbol))
+
+    @classmethod
+    def _get_diagonal_attack_locations(cls, location):
+
+        left_diagonal_negative_locations = {location for location in
+                                            cls._get_left_diagonal_negative_attack_locations(location)}
+        left_diagonal_possitive_locations = {location for location in
+                                             cls._get_left_diagonal_positive_attack_locations(location)}
+        right_diagonal_negative_locations = {location for location in
+                                             cls._get_right_diagonal_negative_attack_locations(location)}
+        right_diagonal_possitive_locations = {location for location in
+                                              cls._get_right_diagonal_positive_attack_locations(location)}
+        return list(left_diagonal_negative_locations ^ left_diagonal_possitive_locations ^
+                    right_diagonal_negative_locations ^ right_diagonal_possitive_locations)
+
+
+    @classmethod
+    def _get_straight_line_attack_locations(cls, location):
+
+        from chess.board_loc import Location, _X_LABELS, _Y_LABELS
+
+        x_line_locs_set = {Location("{}{}".format(*loc_label))
+                           for loc_label in product(location.x_label, _Y_LABELS)}
+        y_line_locs_set = {Location("{}{}".format(*loc_label))
+                           for loc_label in product(_X_LABELS, location.y_label)}
+
+        return list(x_line_locs_set ^ y_line_locs_set)
+
 
 class Pawn(Piece):
 
@@ -139,6 +214,10 @@ class Bishop(Piece):
             raise UserActionError
         return Route(move.get_path())
 
+    def get_attacked_locations(self, location):
+        return self._get_diagonal_attack_locations(location)
+
+
 class Rook(Piece):
 
     _raw_symbol = 'R'
@@ -149,6 +228,8 @@ class Rook(Piece):
             return Route(move.get_path())
         raise UserActionError
 
+    def get_attacked_locations(self, location):
+        return self._get_straight_line_attack_locations(location)
 
 
 class Queen(Piece):
@@ -163,6 +244,12 @@ class Queen(Piece):
                 raise UserActionError
 
         return Route(move.get_path())
+
+    def get_attacked_locations(self, location):
+        _straight_line_attack_locations = self._get_straight_line_attack_locations(location)
+        _diagonal_attack_locations = self._get_diagonal_attack_locations(location)
+
+        return list(set(_straight_line_attack_locations) ^ set(_diagonal_attack_locations))
 
 
 class King(Piece):
