@@ -1,6 +1,6 @@
 from itertools import product
 
-from chess.board_loc import Board, Location
+import chess.board_loc
 from chess.exceptions import UserActionError
 from chess.route import Route
 
@@ -67,7 +67,7 @@ class Piece(object):
         while x_symbol != 'a' and y_symbol != '1':
             x_symbol = chr(ord(x_symbol) - 1)
             y_symbol = chr(ord(y_symbol) - 1)
-            yield Location("{}{}".format(x_symbol, y_symbol))
+            yield chess.board_loc.Location("{}{}".format(x_symbol, y_symbol))
 
     @staticmethod
     def _get_left_diagonal_positive_attack_locations(location):
@@ -76,7 +76,7 @@ class Piece(object):
         while x_symbol != 'a' and y_symbol != '8':
             x_symbol = chr(ord(x_symbol) - 1)
             y_symbol = chr(ord(y_symbol) + 1)
-            yield Location("{}{}".format(x_symbol, y_symbol))
+            yield chess.board_loc.Location("{}{}".format(x_symbol, y_symbol))
 
     @staticmethod
     def _get_right_diagonal_negative_attack_locations(location):
@@ -85,7 +85,7 @@ class Piece(object):
         while x_symbol != 'h' and y_symbol != '1':
             x_symbol = chr(ord(x_symbol) + 1)
             y_symbol = chr(ord(y_symbol) - 1)
-            yield Location("{}{}".format(x_symbol, y_symbol))
+            yield chess.board_loc.Location("{}{}".format(x_symbol, y_symbol))
 
     @staticmethod
     def _get_right_diagonal_positive_attack_locations(location):
@@ -94,7 +94,7 @@ class Piece(object):
         while x_symbol != 'h' and y_symbol != '8':
             x_symbol = chr(ord(x_symbol) + 1)
             y_symbol = chr(ord(y_symbol) + 1)
-            yield Location("{}{}".format(x_symbol, y_symbol))
+            yield chess.board_loc.Location("{}{}".format(x_symbol, y_symbol))
 
     @classmethod
     def _get_diagonal_attack_locations(cls, location):
@@ -115,6 +115,8 @@ class Piece(object):
 
     @classmethod
     def _get_straight_line_attack_locations(cls, location):
+        Board = chess.board_loc.Board
+        Location = chess.board_loc.Location
         x_line_locs_set = {
             Location("{}{}".format(*loc_label))
             for loc_label in product(location.x_label, Board.iter_y_labels())}
