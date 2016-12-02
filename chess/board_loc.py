@@ -87,10 +87,12 @@ class Location(object):
         return self.loc_label
 
     def __eq__(self, other):
+        if not isinstance(other, Location):
+            return NotImplemented
         return self.loc_label == other.loc_label
 
     def __ne__(self, other):
-        return self.loc_label != other.loc_label
+        return not (self == other)
 
     def __hash__(self):
         return hash(self.loc_label)
