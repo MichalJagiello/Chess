@@ -2,10 +2,10 @@ from chess.session_runner import (
     ChessGameSessionRunner,
     QueensPuzzleSessionRunner,
 )
-from chess.ui import UserInput
+from chess.ui import UserInputMixin
 
 
-class ChessMajsterGame(UserInput):
+class ChessMajsterGame(UserInputMixin):
 
     def run(self):
         self.welcome()
@@ -13,15 +13,16 @@ class ChessMajsterGame(UserInput):
         session_runner.run()
 
     def welcome(self):
-        print "#############################"
-        print "# Welcome to Chess Majster! #"
-        print "#############################\n"
-        print ("Type {0} (or Ctrl+D, or Ctrl+C) at any time "
-               "to quit the game.".format(self.exit_game_cmd))
+        print '#############################'
+        print '# Welcome to Chess Majster! #'
+        print '#############################\n'
+        print ('Type {0} (or Ctrl+D, or Ctrl+C) at any time '
+               'to quit the game.'.format(self.exit_game_cmd))
 
     def choose_session_runner(self):
         while True:
             print '\nPlease, choose the kind of session:'
+            print
             print '1) chess game'
             print '2) queens puzzle'
             print

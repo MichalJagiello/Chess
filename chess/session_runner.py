@@ -1,19 +1,21 @@
-from chess.drawer import Drawer
 from chess.exceptions import UserActionError
 from chess.session import (
     ChessGameSession,
     QueensPuzzleSession,
 )
-from chess.ui import UserInput
+from chess.ui import (
+    Drawer,
+    UserInputMixin,
+)
 
 
-class SessionRunner(UserInput):
+class SessionRunner(UserInputMixin):
 
     session_class = None   # must be set in subclasses
 
     def __init__(self):
         self.session = self.session_class()
-        self.drawer = Drawer()
+        self.drawer = Drawer(self)
 
     def run(self):
         try:
@@ -29,15 +31,16 @@ class SessionRunner(UserInput):
         is_new_turn = True
         while True:
             if is_new_turn:
-                self.drawer.show(self.session)
+                self.drawer.show()
             try:
                 action_arg = self.get_action_arg()
-                session_finished = self.session.act(action_arg)
+                session_completed = self.session.act(action_arg)
             except UserActionError as exc:
                 is_new_turn = False
                 print exc
             else:
-                if session_finished:
+                if session_completed:
+                    self.at_completed()
                     break
                 is_new_turn = True
 
@@ -47,11 +50,14 @@ class SessionRunner(UserInput):
     def get_action_arg(self):
         raise NotImplementedError
 
+    def at_completed(self):
+        pass
+
     def at_end(self):
         print '\nGood bye.\n'
 
 
-class ChessGameSessionRunner(object):
+class ChessGameSessionRunner(SessionRunner):
 
     session_class = ChessGameSession
 
@@ -66,7 +72,7 @@ class ChessGameSessionRunner(object):
         return map(str.strip, user_input.split())
 
 
-class QueensPuzzleSessionRunner(object):
+class QueensPuzzleSessionRunner(SessionRunner):
 
     session_class = QueensPuzzleSession
 
@@ -77,3 +83,6 @@ class QueensPuzzleSessionRunner(object):
 
     def get_action_arg(self):
         return self.input(self._input_msg)
+
+    def at_completed(self):
+        print '\nCongratulations! You solved it!\n'
