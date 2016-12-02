@@ -12,6 +12,7 @@ class QueenResolver(object):
         :param loc: Location
         :return: bool
         """
+
         return not (loc in self._reserved_fields)
 
     def reserve_field(self, loc, piece):
