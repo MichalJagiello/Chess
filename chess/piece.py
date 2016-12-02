@@ -1,5 +1,6 @@
 from itertools import product
 
+from chess.board_loc import Board, Location
 from chess.exceptions import UserActionError
 from chess.route import Route
 
@@ -62,8 +63,6 @@ class Piece(object):
     @staticmethod
     def _get_left_diagonal_negative_attack_locations(location):
 
-        from chess.board_loc import Location
-
         x_symbol = location.x_label
         y_symbol = location.y_label
         while x_symbol != 'a' and y_symbol != '1':
@@ -73,8 +72,6 @@ class Piece(object):
 
     @staticmethod
     def _get_left_diagonal_positive_attack_locations(location):
-
-        from chess.board_loc import Location
 
         x_symbol = location.x_label
         y_symbol = location.y_label
@@ -86,8 +83,6 @@ class Piece(object):
     @staticmethod
     def _get_right_diagonal_negative_attack_locations(location):
 
-        from chess.board_loc import Location
-
         x_symbol = location.x_label
         y_symbol = location.y_label
         while x_symbol != 'h' and y_symbol != '1':
@@ -97,8 +92,6 @@ class Piece(object):
 
     @staticmethod
     def _get_right_diagonal_positive_attack_locations(location):
-
-        from chess.board_loc import Location
 
         x_symbol = location.x_label
         y_symbol = location.y_label
@@ -112,25 +105,22 @@ class Piece(object):
 
         left_diagonal_negative_locations = {location for location in
                                             cls._get_left_diagonal_negative_attack_locations(location)}
-        left_diagonal_possitive_locations = {location for location in
-                                             cls._get_left_diagonal_positive_attack_locations(location)}
+        left_diagonal_positive_locations = {location for location in
+                                            cls._get_left_diagonal_positive_attack_locations(location)}
         right_diagonal_negative_locations = {location for location in
                                              cls._get_right_diagonal_negative_attack_locations(location)}
-        right_diagonal_possitive_locations = {location for location in
-                                              cls._get_right_diagonal_positive_attack_locations(location)}
-        return list(left_diagonal_negative_locations ^ left_diagonal_possitive_locations ^
-                    right_diagonal_negative_locations ^ right_diagonal_possitive_locations)
-
+        right_diagonal_positive_locations = {location for location in
+                                             cls._get_right_diagonal_positive_attack_locations(location)}
+        return list(left_diagonal_negative_locations ^ left_diagonal_positive_locations ^
+                    right_diagonal_negative_locations ^ right_diagonal_positive_locations)
 
     @classmethod
     def _get_straight_line_attack_locations(cls, location):
 
-        from chess.board_loc import Location, _X_LABELS, _Y_LABELS
-
         x_line_locs_set = {Location("{}{}".format(*loc_label))
-                           for loc_label in product(location.x_label, _Y_LABELS)}
+                           for loc_label in product(location.x_label, Board.iter_y_labels())}
         y_line_locs_set = {Location("{}{}".format(*loc_label))
-                           for loc_label in product(_X_LABELS, location.y_label)}
+                           for loc_label in product(Board.iter_x_labels(), location.y_label)}
 
         return list(x_line_locs_set ^ y_line_locs_set)
 
