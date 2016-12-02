@@ -4,6 +4,7 @@ from chess.player import Player
 from resolver import QueenResolver
 from board_loc import Location
 from piece import PieceFactory
+from chess.exceptions import UserActionError
 
 
 class Session(object):
@@ -87,4 +88,6 @@ class QueensPuzzleSession(PuzzleSession):
             self._queen_count += 1
             if self._queen_count == self.max_queen_count:
                 return True
+        else:
+            raise UserActionError('You can not place the figure!')
         return False
