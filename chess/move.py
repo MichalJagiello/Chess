@@ -14,8 +14,8 @@ class MoveFactory(object):
     _kingside_castling_label = '0-0'
 
     def create(self, session, move_spec):
-        #from chess.session import ChessGameSession
-        #assert isinstance(session, ChessGameSession)
+        from chess.session import ChessGameSession
+        assert isinstance(session, ChessGameSession)
         assert isinstance(move_spec, list)
         assert all(isinstance(item, str) for item in move_spec)
         if len(move_spec) == 2:
@@ -83,9 +83,9 @@ class NormalMove(Move):
     def _maintain_future_castlings(self):
         player = self._session.current_player
         if self._should_disable_queenside_castlings():
-            player.can_queenside_castling = False
+            player.queenside_castling_enabled = False
         if self._should_disable_kingside_castlings():
-            player.can_kingside_castling = False
+            player.kingside_castling_enabled = False
 
     def _check_src_not_empty(self):
         if self.piece is None:
@@ -106,12 +106,12 @@ class NormalMove(Move):
 
     def _check_dst_field(self, route):
         dst_piece = self._session.board[self.dst]
-        if route.must_be_attack:
+        if route.attack_required:
             if not dst_piece:
                 self._check_en_passant()
             elif self.piece.is_white == dst_piece.is_white:
                 raise UserActionError('This move has to be an attack.')
-        if route.must_not_be_attack:
+        if route.attack_forbidden:
             if dst_piece:
                 raise UserActionError('This move can\'t be an attack.')
         if dst_piece and self.piece.is_white == dst_piece.is_white:
@@ -183,8 +183,8 @@ class CastlingMove(Move):
 
     def _disable_future_castlings(self):
         player = self._session.current_player
-        player.can_queenside_castling = False
-        player.can_kingside_castling = False
+        player.queenside_castling_enabled = False
+        player.kingside_castling_enabled = False
 
     # non-public helpers:
 
@@ -241,7 +241,7 @@ class QueensideCastlingMove(CastlingMove):
     king_dst_x_label = 'c'
 
     def can_be_done(self):
-        return self._session.current_player.can_queenside_castling
+        return self._session.current_player.queenside_castling_enabled
 
 
 class KingsideCastlingMove(CastlingMove):
@@ -254,4 +254,4 @@ class KingsideCastlingMove(CastlingMove):
     king_dst_x_label = 'g'
 
     def can_be_done(self):
-        return self._session.current_player.can_kingside_castling
+        return self._session.current_player.kingside_castling_enabled

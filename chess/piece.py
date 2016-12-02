@@ -148,8 +148,8 @@ class Pawn(Piece):
             raise UserActionError
         path = move.get_path()
         if self._is_attack(vector):
-            return Route(path, must_be_attack=True, must_not_be_attack=False)
-        return Route(path, must_be_attack=False, must_not_be_attack=True)
+            return Route(path, attack_required=True, attack_forbidden=False)
+        return Route(path, attack_required=False, attack_forbidden=True)
 
     def _first_move(self, move):
         """

@@ -1,6 +1,6 @@
 class Route(object):
 
-    def __init__(self, path, must_be_attack=False, must_not_be_attack=False):
+    def __init__(self, path, attack_required=False, attack_forbidden=False):
         self.path = path
-        self.must_be_attack = must_be_attack
-        self.must_not_be_attack = must_not_be_attack
+        self.attack_required = attack_required
+        self.attack_forbidden = attack_forbidden

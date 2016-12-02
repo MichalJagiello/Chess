@@ -1,6 +1,4 @@
-
-
-class QueenResolver(object):
+class QueensPuzzleResolver(object):
 
     def __init__(self):
         self._reserved_fields = set()
@@ -22,8 +20,5 @@ class QueenResolver(object):
         :param piece: Piece
         :return:
         """
-
         self._reserved_fields.update(piece.get_attacked_locations(loc))
         self._reserved_fields.add(loc)
-
-
