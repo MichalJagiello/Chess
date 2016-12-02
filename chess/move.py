@@ -48,7 +48,6 @@ class NormalMove(Move):
         self.src = Location(src_label)
         self.dst = Location(dst_label)
         self.piece = session.board[self.src]
-        self._session = session
         self._en_passant_attack_dst = None
 
     def get_vector(self):
@@ -107,6 +106,7 @@ class NormalMove(Move):
     def _check_dst_field(self, route):
         dst_piece = self._session.board[self.dst]
         if route.attack_required:
+            assert isinstance(self.piece, Pawn)
             if not dst_piece:
                 self._check_en_passant()
             elif self.piece.is_white == dst_piece.is_white:
@@ -181,12 +181,12 @@ class CastlingMove(Move):
     def can_be_done(self):
         raise NotImplementedError
 
+    # non-public helpers:
+
     def _disable_future_castlings(self):
         player = self._session.current_player
         player.queenside_castling_enabled = False
         player.kingside_castling_enabled = False
-
-    # non-public helpers:
 
     def _move_the_rook(self):
         rook_move = self._get_rook_move()

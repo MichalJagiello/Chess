@@ -72,7 +72,7 @@ class ChessGameSessionRunner(SessionRunner):
         return self._parse_user_input(user_input)
 
     def _parse_user_input(self, user_input):
-        return map(str.strip, user_input.replace('-', ' ').split())
+        return map(str.strip, user_input.split())
 
 
 class QueensPuzzleSessionRunner(SessionRunner):
