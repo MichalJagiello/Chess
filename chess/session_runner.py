@@ -69,7 +69,10 @@ class ChessGameSessionRunner(SessionRunner):
     def get_action_arg(self):
         input_msg = self._input_msg_pattern.format(self.session.current_player)
         user_input = self.input(input_msg)
-        return map(str.strip, user_input.split())
+        return self._parse_user_input(user_input)
+
+    def _parse_user_input(self, user_input):
+        return map(str.strip, user_input.replace('-', ' ').split())
 
 
 class QueensPuzzleSessionRunner(SessionRunner):
