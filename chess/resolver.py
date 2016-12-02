@@ -24,5 +24,6 @@ class QueenResolver(object):
         """
 
         self._reserved_fields.update(piece.get_attacked_locations(loc))
+        self._reserved_fields.add(loc)
 
 
