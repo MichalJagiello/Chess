@@ -188,6 +188,14 @@ class TestLocation(unittest.TestCase):
         'I3',
     ]
 
+    eq_ne_hash_for_equal_cases = init_and_basics_cases
+
+    eq_ne_for_unequal_cases = [
+        # (<location label or None>, <location label or None>)
+        ('a1', None),
+        (None, 'a1'),
+    ] + zip(init_and_basics_cases[:-1], init_and_basics_cases[1:])
+
     get_vector_cases = [
         # (<src location label>,
         #  <dst location label>,
@@ -302,6 +310,7 @@ class TestLocation(unittest.TestCase):
         ('f2', 'b7'),
     ]
 
+
     @foreach(init_and_basics_cases)
     def test_init_and_basics(self, given_loc_label):
         loc = Location(given_loc_label)
@@ -321,6 +330,34 @@ class TestLocation(unittest.TestCase):
         with self.assertRaises(UserActionError):
             Location(given_loc_label)
 
+    @foreach(eq_ne_hash_for_equal_cases)
+    def test_eq_ne_hash_for_equal(self, given_loc_label):
+        loc1 = Location(given_loc_label)
+        loc2 = Location(given_loc_label.lower())
+        loc3 = Location(given_loc_label.upper())
+        eq12 = (loc1 == loc2)
+        eq23 = (loc2 == loc3)
+        ne12 = (loc1 != loc2)
+        ne23 = (loc2 != loc3)
+        hash1 = hash(loc1)
+        hash2 = hash(loc2)
+        hash3 = hash(loc3)
+        self.assertTrue(eq12)
+        self.assertTrue(eq23)
+        self.assertFalse(ne12)
+        self.assertFalse(ne23)
+        self.assertEqual(hash1, hash2)
+        self.assertEqual(hash2, hash3)
+
+    @foreach(eq_ne_for_unequal_cases)
+    def test_eq_ne_for_unequal(self, loc_label1, loc_label2):
+        loc1 = Location(loc_label1) if loc_label1 else None
+        loc2 = Location(loc_label2) if loc_label2 else None
+        eq12 = (loc1 == loc2)
+        ne12 = (loc1 != loc2)
+        self.assertFalse(eq12)
+        self.assertTrue(ne12)
+
     @foreach(get_vector_cases)
     def test_get_vector(self, src_label, dst_label, expected_vector):
         src = Location(src_label)
@@ -334,10 +371,9 @@ class TestLocation(unittest.TestCase):
         src = Location(src_label)
         dst = Location(dst_label)
         actual_path = src.get_path(dst)
-        actual_path_labels = [loc.loc_label for loc in actual_path]
+        expected_path = [Location(label) for label in expected_path_labels]
         self.assertIsInstance(actual_path, list)
-        self.assertTrue(all(isinstance(loc, Location) for loc in actual_path))
-        self.assertEqual(actual_path_labels, expected_path_labels)
+        self.assertEqual(actual_path, expected_path)
 
     @foreach(get_path_raising_error_cases)
     def test_get_path_raising_error(self, src_label, dst_label):
