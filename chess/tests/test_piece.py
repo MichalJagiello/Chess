@@ -279,3 +279,78 @@ class PieceTestCase(unittest.TestCase):
         king = self.piece_factory.create('K')
         move = Move(src=Location(src), dst=Location(dst))
         self.assertRaises(UserActionError, king.get_route, move)
+
+    def test_rook_attacked_locations(self):
+        rook = self.piece_factory.create('R')
+
+        attacked_locations = rook.get_attacked_locations(Location('a1'))
+        valid_attacked_locations = [
+            Location('a2'),
+            Location('a3'),
+            Location('a4'),
+            Location('a5'),
+            Location('a6'),
+            Location('a7'),
+            Location('a8'),
+            Location('b1'),
+            Location('c1'),
+            Location('d1'),
+            Location('e1'),
+            Location('f1'),
+            Location('g1'),
+            Location('h1'),
+        ]
+        self.assertItemsEqual(attacked_locations, valid_attacked_locations)
+
+        attacked_locations = rook.get_attacked_locations(Location('g4'))
+        valid_attacked_locations = [
+            Location('g1'),
+            Location('g2'),
+            Location('g3'),
+            Location('g5'),
+            Location('g6'),
+            Location('g7'),
+            Location('g8'),
+            Location('a4'),
+            Location('b4'),
+            Location('c4'),
+            Location('d4'),
+            Location('e4'),
+            Location('f4'),
+            Location('h4'),
+        ]
+        self.assertItemsEqual(attacked_locations, valid_attacked_locations)
+
+    def test_bishop_attacked_locations(self):
+        bishop = self.piece_factory.create('B')
+
+        attacked_locations = bishop.get_attacked_locations(Location('C2'))
+        valid_attacked_locations = [
+            Location('b1'),
+            Location('d3'),
+            Location('e4'),
+            Location('f5'),
+            Location('g6'),
+            Location('h7'),
+            Location('b3'),
+            Location('a4'),
+            Location('d1'),
+        ]
+
+        self.assertItemsEqual(attacked_locations, valid_attacked_locations)
+
+        attacked_locations = bishop.get_attacked_locations(Location('a1'))
+        valid_attacked_locations = [
+            Location('b2'),
+            Location('c3'),
+            Location('d4'),
+            Location('e5'),
+            Location('f6'),
+            Location('g7'),
+            Location('h8'),
+        ]
+
+        self.assertItemsEqual(attacked_locations, valid_attacked_locations)
+
+    def test_queen_attacked_locations(self):
+        pass
