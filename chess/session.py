@@ -5,7 +5,7 @@ from chess.board_loc import (
 from chess.exceptions import UserActionError
 from chess.move import MoveFactory
 from chess.piece import PieceFactory
-from chess.resolver import QueenResolver
+from chess.resolver import QueensPuzzleResolver
 
 
 class Session(object):
@@ -55,8 +55,8 @@ class ChessGamePlayer(object):
 
     def __init__(self, is_white):
         self.player_label = 'White' if is_white else 'Black'
-        self.can_queenside_castling = True
-        self.can_kingside_castling = True
+        self.queenside_castling_enabled = True
+        self.kingside_castling_enabled = True
 
     def __str__(self):
         return self.player_label
@@ -80,7 +80,7 @@ class QueensPuzzleSession(PuzzleSession):
     def __init__(self, *args, **kwargs):
         super(QueensPuzzleSession, self).__init__(*args, **kwargs)
         self._queen_count = 0
-        self._queen_resolver = QueenResolver()
+        self._queen_resolver = QueensPuzzleResolver()
         self._queen = PieceFactory().create('Q')
 
     def act(self, loc_label):

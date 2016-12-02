@@ -1,8 +1,5 @@
+import chess.piece
 from chess.exceptions import UserActionError
-from chess.piece import (
-    Piece,
-    PieceFactory,
-)
 
 
 _X_LABELS = 'abcdefgh'
@@ -15,7 +12,7 @@ _LABEL_TO_Y = {label: y for y, label in enumerate(_Y_LABELS)}
 class Board(object):
 
     def __init__(self):
-        self._piece_factory = PieceFactory()
+        self._piece_factory = chess.piece.PieceFactory()
         self._rows_of_fields = [[None for _ in _X_LABELS]
                                 for _ in _Y_LABELS]
 
@@ -31,7 +28,7 @@ class Board(object):
 
     def __setitem__(self, loc, piece):
         assert isinstance(loc, Location)
-        assert isinstance(piece, Piece)
+        assert isinstance(piece, chess.piece.Piece)
         self._rows_of_fields[loc._y][loc._x] = piece
 
     def __delitem__(self, loc):

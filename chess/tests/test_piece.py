@@ -140,8 +140,8 @@ class PieceTestCase(unittest.TestCase):
 
         move = Move(src=Location("b2"), dst=Location("b4"))  # white piece first move
         route = white_pawn.get_route(move)
-        self.assertFalse(route.must_be_attack)
-        self.assertTrue(route.must_not_be_attack)
+        self.assertFalse(route.attack_required)
+        self.assertTrue(route.attack_forbidden)
 
         # white piece not first two fields move
         move = Move(src=Location("b3"), dst=Location("b5"))
@@ -150,8 +150,8 @@ class PieceTestCase(unittest.TestCase):
         # black piece first move
         move = Move(src=Location("b7"), dst=Location("b5"))
         route = black_pawn.get_route(move)
-        self.assertFalse(route.must_be_attack)
-        self.assertTrue(route.must_not_be_attack)
+        self.assertFalse(route.attack_required)
+        self.assertTrue(route.attack_forbidden)
 
         # black piece not first two fields move
         move = Move(src=Location("b6"), dst=Location("b4"))
@@ -160,8 +160,8 @@ class PieceTestCase(unittest.TestCase):
         # white move attack
         move = Move(src=Location("b3"), dst=Location("a4"))
         route = white_pawn.get_route(move)
-        self.assertTrue(route.must_be_attack)
-        self.assertFalse(route.must_not_be_attack)
+        self.assertTrue(route.attack_required)
+        self.assertFalse(route.attack_forbidden)
 
     def test_bishop_move(self):
         bishop = self.piece_factory.create('B')
